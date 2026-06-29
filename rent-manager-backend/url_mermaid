@@ -1,0 +1,129 @@
+erDiagram
+    roles {
+        BIGINT rol_id PK
+        VARCHAR rol_code UK
+        VARCHAR rol_name
+        TIMESTAMP rol_created_at
+    }
+
+    users {
+        BIGINT usr_id PK
+        VARCHAR usr_name
+        VARCHAR usr_email UK
+        VARCHAR usr_password_hash
+        TIMESTAMP usr_created_at
+        TIMESTAMP usr_updated_at
+    }
+
+    user_roles {
+        BIGINT usr_id PK, FK
+        BIGINT rol_id PK, FK
+    }
+
+    owners {
+        BIGINT own_id PK
+        VARCHAR own_name
+        VARCHAR own_email
+        VARCHAR own_phone
+        VARCHAR own_document_number UK
+        TIMESTAMP own_created_at
+        TIMESTAMP own_updated_at
+    }
+
+    tenants {
+        BIGINT ten_id PK
+        VARCHAR ten_name
+        VARCHAR ten_email
+        VARCHAR ten_phone
+        VARCHAR ten_document_number UK
+        TIMESTAMP ten_created_at
+        TIMESTAMP ten_updated_at
+    }
+
+    property_types {
+        BIGINT pty_id PK
+        VARCHAR pty_code UK
+        VARCHAR pty_name
+    }
+
+    property_statuses {
+        BIGINT pst_id PK
+        VARCHAR pst_code UK
+        VARCHAR pst_name
+    }
+
+    properties {
+        BIGINT pro_id PK
+        BIGINT own_id FK
+        BIGINT pty_id FK
+        BIGINT pst_id FK
+        VARCHAR pro_code UK
+        VARCHAR pro_title
+        TEXT pro_description
+        VARCHAR pro_street
+        VARCHAR pro_street_number
+        VARCHAR pro_floor
+        VARCHAR pro_apartment
+        VARCHAR pro_city
+        VARCHAR pro_province
+        VARCHAR pro_country
+        VARCHAR pro_postal_code
+        TIMESTAMP pro_created_at
+        TIMESTAMP pro_updated_at
+    }
+
+    contract_statuses {
+        BIGINT cst_id PK
+        VARCHAR cst_code UK
+        VARCHAR cst_name
+    }
+
+    rental_contracts {
+        BIGINT rco_id PK
+        BIGINT pro_id FK
+        BIGINT ten_id FK
+        BIGINT cst_id FK
+        DATE rco_start_date
+        DATE rco_end_date
+        DECIMAL rco_monthly_amount
+        DECIMAL rco_deposit_amount
+        VARCHAR rco_currency
+        TEXT rco_notes
+        TIMESTAMP rco_created_at
+        TIMESTAMP rco_updated_at
+    }
+
+    payment_statuses {
+        BIGINT pas_id PK
+        VARCHAR pas_code UK
+        VARCHAR pas_name
+    }
+
+    rent_payments {
+        BIGINT rpa_id PK
+        BIGINT rco_id FK
+        BIGINT pas_id FK
+        INT rpa_period_year
+        INT rpa_period_month
+        DECIMAL rpa_amount
+        DATE rpa_due_date
+        DATE rpa_paid_date
+        VARCHAR rpa_method
+        TEXT rpa_notes
+        TIMESTAMP rpa_created_at
+        TIMESTAMP rpa_updated_at
+    }
+
+    users ||--o{ user_roles : has
+    roles ||--o{ user_roles : assigned
+
+    owners ||--o{ properties : owns
+    property_types ||--o{ properties : classifies
+    property_statuses ||--o{ properties : defines
+
+    properties ||--o{ rental_contracts : has
+    tenants ||--o{ rental_contracts : signs
+    contract_statuses ||--o{ rental_contracts : defines
+
+    rental_contracts ||--o{ rent_payments : generates
+    payment_statuses ||--o{ rent_payments : defines

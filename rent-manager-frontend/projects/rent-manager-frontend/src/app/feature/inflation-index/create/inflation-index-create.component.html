@@ -1,0 +1,25 @@
+<section class="space-y-6">
+  <div>
+    <h1 class="text-3xl font-extrabold tracking-tight text-slate-950">
+      {{ 'inflationIndexes.create.title' | translate }}
+    </h1>
+
+    <p class="mt-2 text-slate-500">
+      {{ 'inflationIndexes.create.subtitle' | translate }}
+    </p>
+  </div>
+
+  <div class="rounded-3xl bg-white p-6 shadow-sm">
+    <rm-inflation-index-form #inflationIndexForm />
+
+    <div class="mt-6 flex justify-end gap-3">
+      <button mat-stroked-button type="button" (click)="goToList$.next()">
+        {{ 'inflationIndexes.create.cancel' | translate }}
+      </button>
+
+      <button mat-flat-button color="primary" type="button" (click)="create$.next()">
+        {{ 'inflationIndexes.create.save' | translate }}
+      </button>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,109 @@
+<form class="space-y-6" [formGroup]="formGroup">
+  <section>
+    <h2 class="mb-4 text-lg font-bold text-slate-950">
+      {{ 'tenants.form.sections.personal' | translate }}
+    </h2>
+
+    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'tenants.form.name' | translate }}</mat-label>
+        <input matInput [formControlName]="fields.Name" />
+
+        @if (nameField?.hasError('required')) {
+          <mat-error>{{ 'tenants.form.validation.nameRequired' | translate }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'tenants.form.documentNumber' | translate }}</mat-label>
+        <input matInput [formControlName]="fields.DocumentNumber" />
+
+        @if (documentNumberField?.hasError('required')) {
+          <mat-error>{{ 'tenants.form.validation.documentNumberRequired' | translate }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'tenants.form.email' | translate }}</mat-label>
+        <input matInput type="email" [formControlName]="fields.Email" />
+
+        @if (emailField?.hasError('email')) {
+          <mat-error>{{ 'tenants.form.validation.emailInvalid' | translate }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'tenants.form.phone' | translate }}</mat-label>
+        <input matInput [formControlName]="fields.Phone" />
+      </mat-form-field>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="mb-4 text-lg font-bold text-slate-950">
+      {{ 'tenants.form.sections.address' | translate }}
+    </h2>
+
+    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'tenants.form.country' | translate }}</mat-label>
+        <mat-select [formControlName]="fields.CountryId">
+          @for (country of countriesSignal(); track country.id) {
+            <mat-option [value]="country.id">
+              {{ country.name }}
+            </mat-option>
+          }
+        </mat-select>
+
+        @if (countryIdField?.hasError('required')) {
+          <mat-error>{{ 'tenants.form.validation.countryRequired' | translate }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'tenants.form.state' | translate }}</mat-label>
+        <mat-select [formControlName]="fields.StateId">
+          @for (state of statesSignal(); track state.id) {
+            <mat-option [value]="state.id">
+              {{ state.name }}
+            </mat-option>
+          }
+        </mat-select>
+
+        @if (stateIdField?.hasError('required')) {
+          <mat-error>{{ 'tenants.form.validation.stateRequired' | translate }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'tenants.form.city' | translate }}</mat-label>
+        <input matInput [formControlName]="fields.City" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'tenants.form.postalCode' | translate }}</mat-label>
+        <input matInput [formControlName]="fields.PostalCode" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="xl:col-span-2">
+        <mat-label>{{ 'tenants.form.street' | translate }}</mat-label>
+        <input matInput [formControlName]="fields.Street" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'tenants.form.streetNumber' | translate }}</mat-label>
+        <input matInput [formControlName]="fields.StreetNumber" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'tenants.form.floor' | translate }}</mat-label>
+        <input matInput [formControlName]="fields.Floor" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'tenants.form.apartment' | translate }}</mat-label>
+        <input matInput [formControlName]="fields.Apartment" />
+      </mat-form-field>
+    </div>
+  </section>
+</form>

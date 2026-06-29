@@ -1,0 +1,97 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "rent-manager-frontend": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss",
+          "standalone": true,
+          "changeDetection": "OnPush"
+        }
+      },
+      "root": "projects/rent-manager-frontend",
+      "sourceRoot": "projects/rent-manager-frontend/src",
+      "prefix": "rm",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": "dist/rent-manager-frontend",
+            "index": "projects/rent-manager-frontend/src/index.html",
+            "browser": "projects/rent-manager-frontend/src/main.ts",
+            "polyfills": ["zone.js"],
+            "tsConfig": "projects/rent-manager-frontend/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "projects/rent-manager-frontend/public"
+              }
+            ],
+            "styles": ["projects/rent-manager-frontend/src/styles.scss"]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "rent-manager-frontend:build:production"
+            },
+            "development": {
+              "buildTarget": "rent-manager-frontend:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@angular/build:karma",
+          "options": {
+            "tsConfig": "projects/rent-manager-frontend/tsconfig.spec.json",
+            "polyfills": ["zone.js", "zone.js/testing"],
+            "styles": ["projects/rent-manager-frontend/src/styles.scss"]
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/rent-manager-frontend/**/*.ts",
+              "projects/rent-manager-frontend/**/*.html"
+            ],
+            "eslintConfig": "projects/rent-manager-frontend/eslint.config.js"
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "analytics": "a35de710-35ff-4773-981e-73cc30c75473",
+    "schematicCollections": ["angular-eslint"]
+  }
+}

@@ -1,0 +1,82 @@
+<form class="space-y-6" [formGroup]="formGroup">
+  <section>
+    <h2 class="mb-4 text-lg font-bold text-slate-950">
+      {{ 'rentPayments.form.sections.period' | translate }}
+    </h2>
+
+    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'rentPayments.form.period' | translate }}</mat-label>
+        <input matInput [formControlName]="fields.Period" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'rentPayments.form.dueDate' | translate }}</mat-label>
+        <input matInput type="date" [formControlName]="fields.DueDate" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'rentPayments.form.paymentDate' | translate }}</mat-label>
+        <input matInput type="date" [formControlName]="fields.PaymentDate" />
+
+        @if (paymentDateField?.hasError('required')) {
+          <mat-error>{{
+            'rentPayments.form.validation.paymentDateRequired' | translate
+          }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="mb-4 text-lg font-bold text-slate-950">
+      {{ 'rentPayments.form.sections.amounts' | translate }}
+    </h2>
+
+    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'rentPayments.form.baseAmount' | translate }}</mat-label>
+        <input matInput type="number" [formControlName]="fields.BaseAmount" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'rentPayments.form.suggestedAdjustmentPercentage' | translate }}</mat-label>
+        <input
+          matInput
+          type="number"
+          [formControlName]="fields.SuggestedAdjustmentPercentage"
+          readonly
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'rentPayments.form.appliedAdjustmentPercentage' | translate }}</mat-label>
+        <input matInput type="number" [formControlName]="fields.AppliedAdjustmentPercentage" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'rentPayments.form.totalAmount' | translate }}</mat-label>
+        <input matInput type="number" [formControlName]="fields.TotalAmount" />
+
+        @if (totalAmountField?.hasError('required') || totalAmountField?.hasError('min')) {
+          <mat-error>{{
+            'rentPayments.form.validation.totalAmountRequired' | translate
+          }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
+  </section>
+
+  <section>
+    <mat-checkbox [formControlName]="fields.IsPaid">
+      {{ 'rentPayments.form.isPaid' | translate }}
+    </mat-checkbox>
+  </section>
+
+  <section>
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>{{ 'rentPayments.form.notes' | translate }}</mat-label>
+      <textarea matInput rows="3" [formControlName]="fields.Notes"></textarea>
+    </mat-form-field>
+  </section>
+</form>

@@ -1,0 +1,16 @@
+export enum PropertyFormField {
+  OwnerId = 'owner_id',
+  TypeId = 'type_id',
+  StatusId = 'status_id',
+  CountryId = 'country_id',
+  StateId = 'state_id',
+  Code = 'code',
+  Title = 'title',
+  Description = 'description',
+  Street = 'street',
+  StreetNumber = 'street_number',
+  Floor = 'floor',
+  Apartment = 'apartment',
+  City = 'city',
+  PostalCode = 'postal_code',
+}

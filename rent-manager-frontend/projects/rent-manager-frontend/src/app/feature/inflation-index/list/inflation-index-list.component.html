@@ -1,0 +1,32 @@
+<section class="space-y-6">
+  <div class="flex items-start justify-between gap-4">
+    <div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-slate-950">
+        {{ 'inflationIndexes.list.title' | translate }}
+      </h1>
+
+      <p class="mt-2 text-slate-500">
+        {{ 'inflationIndexes.list.subtitle' | translate }}
+      </p>
+    </div>
+
+    <button mat-flat-button color="primary" type="button" (click)="create$.next()">
+      <mat-icon>add</mat-icon>
+      {{ 'inflationIndexes.list.create' | translate }}
+    </button>
+  </div>
+
+  <div class="relative mt-6">
+    @if (isLoadingSignal()) {
+      <div class="absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-white/70">
+        <mat-spinner diameter="36" />
+      </div>
+    }
+
+    <rm-inflation-index-list-table
+      [inflationIndexes]="inflationIndexesSignal()"
+      (view)="view($event)"
+      (edit)="edit($event)"
+    />
+  </div>
+</section>

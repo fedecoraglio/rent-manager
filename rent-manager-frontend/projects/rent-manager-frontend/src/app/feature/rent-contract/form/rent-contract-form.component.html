@@ -1,0 +1,191 @@
+<form class="space-y-6" [formGroup]="formGroup">
+  <section>
+    <h2 class="mb-4 text-lg font-bold text-slate-950">
+      {{ 'rentContracts.form.sections.general' | translate }}
+    </h2>
+
+    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'rentContracts.form.property' | translate }}</mat-label>
+
+        <mat-select [formControlName]="fields.PropertyId">
+          @for (property of propertiesSignal(); track property.id) {
+            <mat-option [value]="property.id">
+              {{ property.title }}
+            </mat-option>
+          }
+        </mat-select>
+
+        @if (propertyIdField?.hasError('required')) {
+          <mat-error>{{ 'rentContracts.form.validation.propertyRequired' | translate }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'rentContracts.form.tenant' | translate }}</mat-label>
+
+        <mat-select [formControlName]="fields.TenantId">
+          @for (tenant of tenantsSignal(); track tenant.id) {
+            <mat-option [value]="tenant.id">
+              {{ tenant.name }}
+            </mat-option>
+          }
+        </mat-select>
+
+        @if (tenantIdField?.hasError('required')) {
+          <mat-error>{{ 'rentContracts.form.validation.tenantRequired' | translate }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'rentContracts.form.status' | translate }}</mat-label>
+
+        <mat-select [formControlName]="fields.StatusId">
+          @for (status of contractStatusesSignal(); track status.id) {
+            <mat-option [value]="status.id">
+              {{ status.name }}
+            </mat-option>
+          }
+        </mat-select>
+
+        @if (statusIdField?.hasError('required')) {
+          <mat-error>{{ 'rentContracts.form.validation.statusRequired' | translate }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="mb-4 text-lg font-bold text-slate-950">
+      {{ 'rentContracts.form.sections.datesAndAmounts' | translate }}
+    </h2>
+
+    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'rentContracts.form.startDate' | translate }}</mat-label>
+        <input matInput type="date" [formControlName]="fields.StartDate" />
+
+        @if (startDateField?.hasError('required')) {
+          <mat-error>{{ 'rentContracts.form.validation.startDateRequired' | translate }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'rentContracts.form.endDate' | translate }}</mat-label>
+        <input matInput type="date" [formControlName]="fields.EndDate" />
+
+        @if (endDateField?.hasError('required')) {
+          <mat-error>{{ 'rentContracts.form.validation.endDateRequired' | translate }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'rentContracts.form.monthlyAmount' | translate }}</mat-label>
+        <input matInput type="number" [formControlName]="fields.MonthlyAmount" />
+
+        @if (monthlyAmountField?.hasError('required') || monthlyAmountField?.hasError('min')) {
+          <mat-error>{{
+            'rentContracts.form.validation.monthlyAmountRequired' | translate
+          }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'rentContracts.form.depositAmount' | translate }}</mat-label>
+        <input matInput type="number" [formControlName]="fields.DepositAmount" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'rentContracts.form.currency' | translate }}</mat-label>
+        <input matInput [formControlName]="fields.Currency" />
+
+        @if (currencyField?.hasError('required')) {
+          <mat-error>{{ 'rentContracts.form.validation.currencyRequired' | translate }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="mb-4 text-lg font-bold text-slate-950">
+      {{ 'rentContracts.form.sections.interestAndAdjustment' | translate }}
+    </h2>
+
+    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'rentContracts.form.dueDay' | translate }}</mat-label>
+        <input matInput type="number" [formControlName]="fields.DueDay" />
+
+        @if (
+          dueDayField?.hasError('required') ||
+          dueDayField?.hasError('min') ||
+          dueDayField?.hasError('max')
+        ) {
+          <mat-error>{{ 'rentContracts.form.validation.dueDayInvalid' | translate }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'rentContracts.form.interestCalculationType' | translate }}</mat-label>
+
+        <mat-select [formControlName]="fields.InterestCalculationTypeId">
+          @for (type of interestCalculationTypesSignal(); track type.id) {
+            <mat-option [value]="type.id">
+              {{ type.name }}
+            </mat-option>
+          }
+        </mat-select>
+
+        @if (interestCalculationTypeIdField?.hasError('required')) {
+          <mat-error>
+            {{ 'rentContracts.form.validation.interestCalculationTypeRequired' | translate }}
+          </mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'rentContracts.form.dailyInterestPercentage' | translate }}</mat-label>
+        <input matInput type="number" [formControlName]="fields.DailyInterestPercentage" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'rentContracts.form.adjustmentType' | translate }}</mat-label>
+
+        <mat-select [formControlName]="fields.AdjustmentTypeId">
+          @for (type of rentAdjustmentTypesSignal(); track type.id) {
+            <mat-option [value]="type.id">
+              {{ type.name }}
+            </mat-option>
+          }
+        </mat-select>
+
+        @if (adjustmentTypeIdField?.hasError('required')) {
+          <mat-error>{{
+            'rentContracts.form.validation.adjustmentTypeRequired' | translate
+          }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'rentContracts.form.adjustmentFrequencyMonths' | translate }}</mat-label>
+        <input matInput type="number" [formControlName]="fields.AdjustmentFrequencyMonths" />
+
+        @if (
+          adjustmentFrequencyMonthsField?.hasError('required') ||
+          adjustmentFrequencyMonthsField?.hasError('min')
+        ) {
+          <mat-error>
+            {{ 'rentContracts.form.validation.adjustmentFrequencyMonthsRequired' | translate }}
+          </mat-error>
+        }
+      </mat-form-field>
+    </div>
+  </section>
+
+  <section>
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>{{ 'rentContracts.form.notes' | translate }}</mat-label>
+      <textarea matInput rows="3" [formControlName]="fields.Notes"></textarea>
+    </mat-form-field>
+  </section>
+</form>

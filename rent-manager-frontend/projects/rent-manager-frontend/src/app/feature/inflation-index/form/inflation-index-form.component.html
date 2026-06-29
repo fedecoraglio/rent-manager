@@ -1,0 +1,43 @@
+<form class="grid gap-4" [formGroup]="formGroup">
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'inflationIndexes.form.period' | translate }}</mat-label>
+
+    <input matInput [formControlName]="fields.Period" placeholder="2026-05" />
+
+    @if (periodField?.hasError('required')) {
+      <mat-error>
+        {{ 'inflationIndexes.form.validation.periodRequired' | translate }}
+      </mat-error>
+    }
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'inflationIndexes.form.percentage' | translate }}</mat-label>
+
+    <input matInput type="number" [formControlName]="fields.Percentage" />
+
+    @if (percentageField?.hasError('required')) {
+      <mat-error>
+        {{ 'inflationIndexes.form.validation.percentageRequired' | translate }}
+      </mat-error>
+    }
+
+    @if (percentageField?.hasError('min')) {
+      <mat-error>
+        {{ 'inflationIndexes.form.validation.percentageMin' | translate }}
+      </mat-error>
+    }
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'inflationIndexes.form.source' | translate }}</mat-label>
+
+    <input matInput [formControlName]="fields.Source" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'inflationIndexes.form.notes' | translate }}</mat-label>
+
+    <textarea matInput rows="3" [formControlName]="fields.Notes"></textarea>
+  </mat-form-field>
+</form>

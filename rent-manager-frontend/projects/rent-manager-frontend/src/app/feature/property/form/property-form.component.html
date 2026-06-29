@@ -1,0 +1,151 @@
+<form class="space-y-6" [formGroup]="formGroup">
+  <section>
+    <h2 class="mb-4 text-lg font-bold text-slate-950">
+      {{ 'properties.form.sections.general' | translate }}
+    </h2>
+
+    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'properties.form.code' | translate }}</mat-label>
+        <input matInput [formControlName]="fields.Code" />
+
+        @if (codeField?.hasError('required')) {
+          <mat-error>{{ 'properties.form.validation.codeRequired' | translate }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="xl:col-span-2">
+        <mat-label>{{ 'properties.form.title' | translate }}</mat-label>
+        <input matInput [formControlName]="fields.Title" />
+
+        @if (titleField?.hasError('required')) {
+          <mat-error>{{ 'properties.form.validation.titleRequired' | translate }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'properties.form.owner' | translate }}</mat-label>
+        <mat-select [formControlName]="fields.OwnerId">
+          @for (owner of ownersSignal(); track owner.id) {
+            <mat-option [value]="owner.id">{{ owner.name }}</mat-option>
+          }
+        </mat-select>
+
+        @if (ownerIdField?.hasError('required')) {
+          <mat-error>{{ 'properties.form.validation.ownerRequired' | translate }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'properties.form.type' | translate }}</mat-label>
+        <mat-select [formControlName]="fields.TypeId">
+          @for (propertyType of propertyTypesSignal(); track propertyType.id) {
+            <mat-option [value]="propertyType.id">
+              {{ propertyType.name }}
+            </mat-option>
+          }
+        </mat-select>
+
+        @if (typeIdField?.hasError('required')) {
+          <mat-error>{{ 'properties.form.validation.typeRequired' | translate }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'properties.form.status' | translate }}</mat-label>
+        <mat-select [formControlName]="fields.StatusId">
+          @for (propertyStatus of propertyStatusesSignal(); track propertyStatus.id) {
+            <mat-option [value]="propertyStatus.id">
+              {{ propertyStatus.name }}
+            </mat-option>
+          }
+        </mat-select>
+
+        @if (statusIdField?.hasError('required')) {
+          <mat-error>{{ 'properties.form.validation.statusRequired' | translate }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="md:col-span-2 xl:col-span-4">
+        <mat-label>{{ 'properties.form.description' | translate }}</mat-label>
+        <textarea matInput rows="3" [formControlName]="fields.Description"></textarea>
+      </mat-form-field>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="mb-4 text-lg font-bold text-slate-950">
+      {{ 'properties.form.sections.address' | translate }}
+    </h2>
+
+    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'properties.form.country' | translate }}</mat-label>
+        <mat-select [formControlName]="fields.CountryId">
+          @for (country of countriesSignal(); track country.id) {
+            <mat-option [value]="country.id">
+              {{ country.name }}
+            </mat-option>
+          }
+        </mat-select>
+
+        @if (countryIdField?.hasError('required')) {
+          <mat-error>{{ 'properties.form.validation.countryRequired' | translate }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'properties.form.state' | translate }}</mat-label>
+        <mat-select [formControlName]="fields.StateId">
+          @for (state of statesSignal(); track state.id) {
+            <mat-option [value]="state.id">
+              {{ state.name }}
+            </mat-option>
+          }
+        </mat-select>
+
+        @if (stateIdField?.hasError('required')) {
+          <mat-error>{{ 'properties.form.validation.stateRequired' | translate }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'properties.form.city' | translate }}</mat-label>
+        <input matInput [formControlName]="fields.City" />
+
+        @if (cityField?.hasError('required')) {
+          <mat-error>{{ 'properties.form.validation.cityRequired' | translate }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'properties.form.postalCode' | translate }}</mat-label>
+        <input matInput [formControlName]="fields.PostalCode" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="xl:col-span-2">
+        <mat-label>{{ 'properties.form.street' | translate }}</mat-label>
+        <input matInput [formControlName]="fields.Street" />
+
+        @if (streetField?.hasError('required')) {
+          <mat-error>{{ 'properties.form.validation.streetRequired' | translate }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'properties.form.streetNumber' | translate }}</mat-label>
+        <input matInput [formControlName]="fields.StreetNumber" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'properties.form.floor' | translate }}</mat-label>
+        <input matInput [formControlName]="fields.Floor" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'properties.form.apartment' | translate }}</mat-label>
+        <input matInput [formControlName]="fields.Apartment" />
+      </mat-form-field>
+    </div>
+  </section>
+</form>

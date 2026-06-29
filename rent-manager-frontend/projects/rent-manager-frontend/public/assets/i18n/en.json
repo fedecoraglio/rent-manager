@@ -1,0 +1,525 @@
+{
+  "app": {
+    "name": "RentManager",
+    "subtitle": "Admin"
+  },
+  "ui": {
+    "propertySummaryCard": {
+      "active": "Active",
+      "currentAmount": "Current Rent",
+      "totalPayments": "Total Payments",
+      "paidPayments": "Paid Payments",
+      "remainingPayments": "Remaining Payments",
+      "nextSuggestedAmount": "Next Suggestion Amount",
+      "nextPendingPeriod": "Next Pending Period",
+      "nextAdjustmentPeriod": "Next Adjustment Period"
+    }
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "menu": {
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "owners": "Owners",
+    "tenants": "Tenants",
+    "properties": "Properties",
+    "contracts": "Rental Contracts",
+    "logout": "Logout"
+  },
+  "errors": {
+    "USR_0006": "A user with this email already exists.",
+    "CORE_9999": "An unexpected error occurred.",
+    "RCO_0001": "Rental contract is required.",
+    "RCO_0002": "Property is required.",
+    "RCO_0003": "Tenant is required.",
+    "RCO_0004": "Status is required.",
+    "RCO_0005": "Start date is required.",
+    "RCO_0006": "End date is required.",
+    "RCO_0007": "End date must be after start date.",
+    "RCO_0008": "Monthly amount is invalid.",
+    "RCO_0009": "Currency is required.",
+    "RCO_0010": "The property already has an active rental contract.",
+    "RCO_0011": "Rental contract not found.",
+    "RCO_0012": "Unable to validate active rental contracts.",
+    "RCO_0013": "Interest calculation type is required.",
+    "RCO_0014": "Adjustment type is required.",
+    "RCO_0015": "Deposit amount is invalid.",
+    "RCO_0016": "Due day must be between 1 and 31.",
+    "RCO_0017": "Daily interest percentage is invalid.",
+    "RCO_0018": "Adjustment frequency is invalid.",
+    "RPA_0001": "Payment is required.",
+    "RPA_0002": "Rental contract is required.",
+    "RPA_0003": "Payment period is required.",
+    "RPA_0004": "Due date is required.",
+    "RPA_0005": "Base amount is invalid.",
+    "RPA_0006": "Total amount is invalid.",
+    "RPA_0007": "Paid amount is invalid.",
+    "RPA_0008": "A payment already exists for this period.",
+    "RPA_0009": "Payment not found.",
+    "RPA_0010": "Unable to get the rental contract for this payment.",
+    "RPA_0011": "This period has already been paid.",
+    "RPA_0012": "Payment period is outside the contract date range."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Active rental contracts overview"
+  },
+  "login": {
+    "title": "Login",
+    "subtitle": "Access the rental management administration panel.",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Sign In",
+    "error": "Unable to sign in. Please check your email and password."
+  },
+  "users": {
+    "title": "User Management",
+    "subtitle": "Manage users who can access the system.",
+    "new": "New User",
+    "search": "Search by name or email",
+    "clear": "Clear",
+    "searchButton": "Search",
+    "edit": {
+      "back": "Back to users",
+      "title": "Edit User",
+      "subtitle": "Update the user's main information.",
+      "cancel": "Cancel",
+      "save": "Save Changes"
+    },
+    "create": {
+      "title": "New User",
+      "subtitle": "Create a user to access the system.",
+      "cancel": "Cancel",
+      "save": "Save User"
+    },
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "password": "Password",
+      "role": "Role",
+      "roleAdmin": "Administrator",
+      "roleManager": "Manager",
+      "validation": {
+        "nameRequired": "Name is required.",
+        "emailRequired": "Email is required.",
+        "emailInvalid": "Enter a valid email address.",
+        "passwordRequired": "Password is required.",
+        "roleRequired": "Role is required."
+      }
+    },
+    "table": {
+      "id": "ID",
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "actions": "Actions",
+      "empty": "No users found.",
+      "view": "View User",
+      "edit": "Edit User",
+      "delete": "Delete User"
+    },
+    "list": {
+      "eyebrow": "Users",
+      "title": "User Management",
+      "subtitle": "Manage users who can access the system.",
+      "new": "New User",
+      "searchPlaceholder": "Search by name or email",
+      "clear": "Clear",
+      "search": "Search"
+    },
+    "view": {
+      "back": "Back to users",
+      "title": "View User",
+      "subtitle": "Selected user details.",
+      "edit": "Edit"
+    }
+  },
+  "owners": {
+    "title": "Owner Management",
+    "subtitle": "Manage property owners in the system.",
+    "new": "New Owner",
+    "search": "Search by name, email, phone or document number",
+    "clear": "Clear",
+    "searchButton": "Search",
+    "edit": {
+      "back": "Back to owners",
+      "title": "Edit Owner",
+      "subtitle": "Update the owner's main information.",
+      "cancel": "Cancel",
+      "save": "Save Changes"
+    },
+    "create": {
+      "title": "New Owner",
+      "subtitle": "Create a new property owner.",
+      "cancel": "Cancel",
+      "save": "Save Owner"
+    },
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "documentNumber": "Document Number",
+      "validation": {
+        "nameRequired": "Name is required.",
+        "emailRequired": "Email is required.",
+        "emailInvalid": "Enter a valid email address.",
+        "documentNumberRequired": "Document number is required."
+      }
+    },
+    "table": {
+      "id": "ID",
+      "name": "Name",
+      "email": "Email",
+      "documentNumber": "Document Number",
+      "phone": "Phone",
+      "actions": "Actions",
+      "empty": "No owners found.",
+      "view": "View Owner",
+      "edit": "Edit Owner",
+      "delete": "Delete Owner"
+    },
+    "list": {
+      "eyebrow": "Owners",
+      "title": "Owner Management",
+      "subtitle": "Manage property owners in the system.",
+      "new": "New Owner",
+      "searchPlaceholder": "Search by name, email, phone or document number",
+      "clear": "Clear",
+      "search": "Search"
+    },
+    "view": {
+      "back": "Back to owners",
+      "title": "View Owner",
+      "subtitle": "Selected owner details.",
+      "edit": "Edit"
+    }
+  },
+  "tenants": {
+    "list": {
+      "eyebrow": "Tenants",
+      "title": "Tenant Management",
+      "subtitle": "Manage tenants registered in the system.",
+      "new": "New Tenant",
+      "searchPlaceholder": "Search by name, email, phone or document number",
+      "clear": "Clear",
+      "search": "Search"
+    },
+    "table": {
+      "id": "ID",
+      "name": "Name",
+      "documentNumber": "Document Number",
+      "email": "Email",
+      "phone": "Phone",
+      "city": "City",
+      "actions": "Actions",
+      "empty": "No tenants found.",
+      "view": "View Tenant",
+      "edit": "Edit Tenant"
+    },
+    "form": {
+      "sections": {
+        "personal": "Personal Information",
+        "address": "Address"
+      },
+      "name": "Name",
+      "email": "Email",
+      "documentNumber": "Document Number",
+      "phone": "Phone",
+      "country": "Country",
+      "state": "State",
+      "city": "City",
+      "street": "Street",
+      "streetNumber": "Number",
+      "floor": "Floor",
+      "apartment": "Apartment",
+      "postalCode": "Postal Code",
+      "validation": {
+        "nameRequired": "Name is required.",
+        "documentNumberRequired": "Document number is required.",
+        "emailInvalid": "Enter a valid email address.",
+        "countryRequired": "Country is required.",
+        "stateRequired": "State is required."
+      }
+    },
+    "create": {
+      "title": "New Tenant",
+      "subtitle": "Create a new tenant in the system.",
+      "cancel": "Cancel",
+      "save": "Save Tenant"
+    },
+    "edit": {
+      "back": "Back to tenants",
+      "title": "Edit Tenant",
+      "subtitle": "Update the tenant's main information.",
+      "cancel": "Cancel",
+      "save": "Save Changes"
+    },
+    "view": {
+      "back": "Back to tenants",
+      "title": "View Tenant",
+      "subtitle": "Selected tenant details.",
+      "edit": "Edit"
+    }
+  },
+  "properties": {
+    "list": {
+      "eyebrow": "Properties",
+      "title": "Property Management",
+      "subtitle": "Manage properties registered in the system.",
+      "new": "New Property",
+      "searchPlaceholder": "Search by code, title, street or city",
+      "clear": "Clear",
+      "search": "Search"
+    },
+    "table": {
+      "id": "ID",
+      "code": "Code",
+      "title": "Title",
+      "city": "City",
+      "street": "Street",
+      "actions": "Actions",
+      "empty": "No properties found.",
+      "view": "View Property",
+      "edit": "Edit Property"
+    },
+    "form": {
+      "sections": {
+        "general": "General Information",
+        "address": "Address"
+      },
+      "owner": "Owner",
+      "type": "Type",
+      "status": "Status",
+      "country": "Country",
+      "state": "State",
+      "code": "Code",
+      "title": "Title",
+      "description": "Description",
+      "city": "City",
+      "street": "Street",
+      "streetNumber": "Number",
+      "floor": "Floor",
+      "apartment": "Apartment",
+      "postalCode": "Postal Code",
+      "validation": {
+        "ownerRequired": "Owner is required.",
+        "typeRequired": "Type is required.",
+        "statusRequired": "Status is required.",
+        "countryRequired": "Country is required.",
+        "stateRequired": "State is required.",
+        "codeRequired": "Code is required.",
+        "titleRequired": "Title is required.",
+        "streetRequired": "Street is required.",
+        "cityRequired": "City is required."
+      }
+    },
+    "create": {
+      "title": "New Property",
+      "subtitle": "Create a new property to manage rentals.",
+      "cancel": "Cancel",
+      "save": "Save Property"
+    },
+    "edit": {
+      "back": "Back to properties",
+      "title": "Edit Property",
+      "subtitle": "Update the property's main information.",
+      "cancel": "Cancel",
+      "save": "Save Changes"
+    },
+    "view": {
+      "back": "Back to properties",
+      "title": "View Property",
+      "subtitle": "Selected property details.",
+      "edit": "Edit"
+    }
+  },
+  "rentContracts": {
+    "list": {
+      "eyebrow": "Rental Management",
+      "title": "Rental Contracts",
+      "subtitle": "Manage rental contracts and their financial configuration.",
+      "new": "New Contract",
+      "propertyFilter": "Property",
+      "allProperties": "All Properties",
+      "clear": "Clear Filter"
+    },
+
+    "table": {
+      "id": "ID",
+      "property": "Property",
+      "tenant": "Tenant",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "monthlyAmount": "Monthly Amount",
+      "currency": "Currency",
+      "actions": "Actions",
+      "view": "View",
+      "edit": "Edit",
+      "empty": "No rental contracts found."
+    },
+    "create": {
+      "title": "Create Rental Contract",
+      "subtitle": "Create a new rental contract.",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "edit": {
+      "title": "Edit Rental Contract",
+      "subtitle": "Update rental contract information.",
+      "save": "Save",
+      "cancel": "Cancel",
+      "back": "Back"
+    },
+    "view": {
+      "title": "Rental Contract Details",
+      "subtitle": "Review rental contract information.",
+      "edit": "Edit",
+      "back": "Back",
+      "contract": "Contract",
+      "monthlyAmount": "Monthly Amount"
+    },
+    "overview": {
+      "floor": "Floor",
+      "apartment": "Apartment",
+      "contract": "Contract",
+      "currentAmount": "Initial Payment",
+      "paymentsSchedule": "Payments schedule",
+      "back": "Back to dashboard"
+    },
+    "form": {
+      "property": "Property",
+      "tenant": "Tenant",
+      "status": "Status",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "monthlyAmount": "Monthly Amount",
+      "depositAmount": "Deposit Amount",
+      "currency": "Currency",
+      "dueDay": "Due Day",
+      "interestCalculationType": "Interest Calculation",
+      "dailyInterestPercentage": "Daily Interest (%)",
+      "adjustmentType": "Adjustment Type",
+      "adjustmentFrequencyMonths": "Adjustment Frequency (Months)",
+      "notes": "Notes",
+      "sections": {
+        "general": "General Information",
+        "datesAndAmounts": "Dates and Amounts",
+        "interestAndAdjustment": "Interest and Adjustments"
+      },
+      "validation": {
+        "propertyRequired": "Property is required.",
+        "tenantRequired": "Tenant is required.",
+        "statusRequired": "Status is required.",
+        "startDateRequired": "Start date is required.",
+        "endDateRequired": "End date is required.",
+        "monthlyAmountRequired": "Monthly amount must be greater than zero.",
+        "currencyRequired": "Currency is required.",
+        "dueDayInvalid": "Due day must be between 1 and 31.",
+        "interestCalculationTypeRequired": "Interest calculation type is required.",
+        "adjustmentTypeRequired": "Adjustment type is required.",
+        "adjustmentFrequencyMonthsRequired": "Adjustment frequency must be greater than zero."
+      }
+    }
+  },
+
+  "contractCatalogs": {
+    "contractStatuses": {
+      "active": "Active",
+      "finished": "Finished",
+      "cancelled": "Cancelled"
+    },
+
+    "interestCalculationTypes": {
+      "daily_from_due_day_next_day": "Daily interest starting the day after the due date",
+      "daily_from_month_first_day": "Daily interest starting from the first day of the month"
+    },
+
+    "rentAdjustmentTypes": {
+      "ipc_argentina": "Argentine CPI"
+    }
+  },
+  "rentPayments": {
+    "create": {
+      "title": "Register Payment"
+    },
+    "edit": {
+      "title": "Edit Payment"
+    },
+    "schedule": {
+      "title": "Payment Schedule",
+      "period": "Period",
+      "dueDate": "Due Date",
+      "suggestedTotalAmount": "Suggested Amount",
+      "paidAmount": "Paid Amount",
+      "status": "Status",
+      "paid": "Paid",
+      "pending": "Pending",
+      "actions": "Actions",
+      "registerPayment": "Register Payment",
+      "empty": "No payments found.",
+      "applied_adjustment_percentage": "Adjustment Percentage"
+    },
+    "form": {
+      "period": "Period",
+      "dueDate": "Due Date",
+      "paymentDate": "Payment Date",
+      "baseAmount": "Base Amount",
+      "suggestedAdjustmentPercentage": "Suggested Adjustment (%)",
+      "appliedAdjustmentPercentage": "Applied Adjustment (%)",
+      "suggestedInterestAmount": "Suggested Interest",
+      "appliedInterestAmount": "Applied Interest",
+      "totalAmount": "Total Amount",
+      "paidAmount": "Paid Amount",
+      "isPaid": "Payment completed",
+      "notes": "Notes",
+      "sections": {
+        "period": "Period",
+        "amounts": "Amounts"
+      },
+      "validation": {
+        "paymentDateRequired": "Payment date is required.",
+        "totalAmountRequired": "Total amount must be greater than zero.",
+        "paidAmountRequired": "Paid amount is required."
+      }
+    }
+  },
+  "inflationIndexes": {
+    "list": {
+      "title": "Índices de inflación",
+      "subtitle": "Administrá los porcentajes mensuales de inflación usados para ajustar alquileres.",
+      "create": "Nuevo índice"
+    },
+    "create": {
+      "title": "Crear índice de inflación",
+      "subtitle": "Agregá un porcentaje mensual de inflación.",
+      "cancel": "Cancelar",
+      "save": "Guardar"
+    },
+    "edit": {
+      "title": "Editar índice de inflación",
+      "subtitle": "Actualizá el porcentaje mensual seleccionado.",
+      "cancel": "Cancelar",
+      "save": "Guardar"
+    },
+    "form": {
+      "period": "Período",
+      "percentage": "Porcentaje",
+      "source": "Fuente",
+      "notes": "Notas",
+      "validation": {
+        "periodRequired": "El período es obligatorio.",
+        "percentageRequired": "El porcentaje es obligatorio.",
+        "percentageMin": "El porcentaje no puede ser negativo."
+      }
+    },
+    "table": {
+      "period": "Período",
+      "percentage": "Porcentaje",
+      "source": "Fuente",
+      "notes": "Notas",
+      "actions": "Acciones"
+    }
+  }
+}

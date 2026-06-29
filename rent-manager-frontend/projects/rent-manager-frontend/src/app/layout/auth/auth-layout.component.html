@@ -1,0 +1,67 @@
+<main class="min-h-screen bg-slate-950 text-slate-900">
+  <div class="grid min-h-screen lg:grid-cols-[1fr_520px]">
+    <section class="hidden flex-col justify-between p-12 text-white lg:flex">
+      <div class="flex items-center justify-between">
+        <div class="text-xl font-bold tracking-tight">RentManager</div>
+
+        <div class="flex items-center gap-2">
+          <button
+            class="rounded-full bg-white/10 px-3 py-2 text-xl transition hover:bg-white/20"
+            type="button"
+            aria-label="Cambiar idioma a español"
+            (click)="changeLanguage('es')"
+          >
+            🇦🇷
+          </button>
+
+          <button
+            class="rounded-full bg-white/10 px-3 py-2 text-xl transition hover:bg-white/20"
+            type="button"
+            aria-label="Change language to English"
+            (click)="changeLanguage('en')"
+          >
+            🇺🇸
+          </button>
+        </div>
+      </div>
+
+      <div class="max-w-xl">
+        <p class="mb-4 text-sm uppercase tracking-[0.3em] text-teal-300">Property management</p>
+
+        <h1 class="text-5xl font-extrabold leading-tight">
+          Administra alquileres, contratos y pagos desde un solo lugar.
+        </h1>
+
+        <p class="mt-6 text-lg text-slate-300">
+          Backoffice moderno para la gestión operativa de propiedades en alquiler.
+        </p>
+      </div>
+
+      <p class="text-sm text-slate-400">© RentManager</p>
+    </section>
+
+    <section class="relative flex items-center justify-center bg-slate-50 p-6">
+      <div class="absolute right-5 top-5 flex items-center gap-2 lg:hidden">
+        <button
+          class="rounded-full bg-slate-200 px-3 py-2 text-xl transition hover:bg-slate-300"
+          type="button"
+          aria-label="Cambiar idioma a español"
+          (click)="changeLanguage('es')"
+        >
+          ES
+        </button>
+
+        <button
+          class="rounded-full bg-slate-200 px-3 py-2 text-xl transition hover:bg-slate-300"
+          type="button"
+          aria-label="Change language to English"
+          (click)="changeLanguage('en')"
+        >
+          EN
+        </button>
+      </div>
+
+      <router-outlet />
+    </section>
+  </div>
+</main>

@@ -1,0 +1,101 @@
+<section class="space-y-6">
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+    <div>
+      <button
+        class="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-slate-950"
+        type="button"
+        (click)="goToList$.next()"
+      >
+        <mat-icon class="!text-lg">arrow_back</mat-icon>
+        {{ 'rentContracts.view.back' | translate }}
+      </button>
+
+      <h1 class="mt-4 text-3xl font-extrabold tracking-tight text-slate-950">
+        {{ 'rentContracts.view.title' | translate }}
+      </h1>
+    </div>
+
+    <button mat-flat-button color="primary" type="button" (click)="editPayment()">
+      <mat-icon>edit</mat-icon>
+      {{ 'rentContracts.view.edit' | translate }}
+    </button>
+  </div>
+
+  <div class="rounded-3xl bg-white p-1 shadow-sm">
+    @if (propertySignal(); as property) {
+      <section class="rounded-3xl bg-white p-6 shadow-sm">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h1 class="text-2xl font-extrabold tracking-tight text-slate-950">
+              {{ property.title }}
+            </h1>
+            <p class="mt-1 text-sm text-slate-500">
+              {{ property.street }} {{ property.street_number }}
+              @if (property.floor) {
+                · {{ 'properties.form.floor' | translate }} {{ property.floor }}
+              }
+              @if (property.apartment) {
+                · {{ 'properties.form.apartment' | translate }} {{ property.apartment }}
+              }
+            </p>
+
+            <p class="mt-1 text-sm text-slate-500">
+              {{ property.city }} · {{ property.postal_code }}
+            </p>
+          </div>
+
+          @if (rentContractSignal(); as contract) {
+            <div class="rounded-2xl px-4 py-3 text-sm text-slate-600">
+              <p>
+                <span class="font-semibold text-slate-950"
+                  >{{ 'rentContracts.view.contract' | translate }}:</span
+                >
+                {{ contract.start_date }} / {{ contract.end_date }}
+              </p>
+              <p>
+                <span class="font-semibold text-slate-950">
+                  {{ 'rentContracts.form.status' | translate }}:
+                </span>
+                {{ contractStatusSignal() }}
+              </p>
+              <p>
+                <span class="font-semibold text-slate-950">
+                  {{ 'rentContracts.form.interestCalculationType' | translate }}:
+                </span>
+                <span class="mt-1 text-xs">{{ interestTypeNameSignal() }}</span>
+              </p>
+              <p>
+                <span class="font-semibold text-slate-950">
+                  {{ 'rentContracts.form.adjustmentType' | translate }}:
+                </span>
+                {{ adjustmentTypeNameSignal() }}
+              </p>
+              <p>
+                <span class="font-semibold text-slate-950">
+                  {{ 'rentContracts.form.dailyInterestPercentage' | translate }}:
+                </span>
+                {{ dailyInterestSignal() }}
+              </p>
+              <p>
+                <span class="font-semibold text-slate-950"
+                  >{{ 'rentContracts.view.monthlyAmount' | translate }}:</span
+                >
+                {{ contract.currency }} {{ contract.monthly_amount }}
+              </p>
+            </div>
+          }
+        </div>
+      </section>
+    }
+  </div>
+  <section class="mt-6 space-y-4">
+    <h2 class="text-xl font-bold text-slate-950">
+      {{ 'rentPayments.schedule.title' | translate }}
+    </h2>
+
+    <rm-rent-payment-schedule
+      [items]="paymentScheduleSignal()"
+      (registerPayment)="registerPayment($event)"
+    />
+  </section>
+</section>

@@ -1,0 +1,37 @@
+<section class="space-y-6">
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+    <div>
+      <button
+        class="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-slate-950"
+        type="button"
+        (click)="goToList$.next()"
+      >
+        <mat-icon class="!text-lg">arrow_back</mat-icon>
+        {{ 'properties.view.back' | translate }}
+      </button>
+
+      <h1 class="mt-4 text-3xl font-extrabold tracking-tight text-slate-950">
+        {{ 'properties.view.title' | translate }}
+      </h1>
+
+      <p class="mt-2 text-slate-500">
+        {{ 'properties.view.subtitle' | translate }}
+      </p>
+    </div>
+
+    <button mat-flat-button color="primary" type="button" (click)="goToEdit$.next()">
+      <mat-icon>edit</mat-icon>
+      {{ 'properties.view.edit' | translate }}
+    </button>
+  </div>
+
+  @if (errorSignal()) {
+    <div class="rounded-2xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+      {{ errorSignal() }}
+    </div>
+  }
+
+  <div class="rounded-3xl bg-white p-6 shadow-sm">
+    <rm-property-form [property]="selectedPropertySignal()" [isReadonly]="true" />
+  </div>
+</section>

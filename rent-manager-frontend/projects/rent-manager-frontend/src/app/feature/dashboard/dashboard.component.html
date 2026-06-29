@@ -1,0 +1,23 @@
+<section class="space-y-6">
+  <div>
+    <h1 class="text-3xl font-extrabold tracking-tight text-slate-950">
+      {{ 'dashboard.title' | translate }}
+    </h1>
+
+    <p class="mt-2 text-slate-500">
+      {{ 'dashboard.subtitle' | translate }}
+    </p>
+  </div>
+
+  @if (isLoading()) {
+    <div class="text-center">Loading...</div>
+  }
+
+  @if (!isLoading()) {
+    <div class="grid gap-6 md:grid-cols-1 xl:grid-cols-2">
+      @for (property of properties(); track property.title) {
+        <rm-property-summary-card [propertySummary]="property" />
+      }
+    </div>
+  }
+</section>

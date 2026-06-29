@@ -1,0 +1,74 @@
+<div class="overflow-hidden rounded-2xl border border-slate-200">
+  <table mat-table [dataSource]="inflationIndexes()" class="w-full">
+    <ng-container matColumnDef="id">
+      <td mat-cell *matCellDef="let item">{{ item.id }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="period">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ 'inflationIndexes.table.period' | translate }}
+      </th>
+
+      <td mat-cell *matCellDef="let item">{{ item.period }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="percentage">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ 'inflationIndexes.table.percentage' | translate }}
+      </th>
+
+      <td mat-cell *matCellDef="let item">{{ item.source }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="source">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ 'inflationIndexes.table.source' | translate }}
+      </th>
+
+      <td mat-cell *matCellDef="let item">{{ item.source }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="notes">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ 'inflationIndexes.table.notes' | translate }}
+      </th>
+
+      <td mat-cell *matCellDef="let item">{{ item.notes }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef class="text-right">
+        {{ 'inflationIndexes.table.actions' | translate }}
+      </th>
+
+      <td mat-cell *matCellDef="let item" class="text-right">
+        <button
+          mat-icon-button
+          type="button"
+          [attr.aria-label]="'inflationIndexes.table.view' | translate"
+          (click)="view.emit(item.id)"
+        >
+          <mat-icon>visibility</mat-icon>
+        </button>
+
+        <button
+          mat-icon-button
+          type="button"
+          [attr.aria-label]="'inflationIndexes.table.edit' | translate"
+          (click)="edit.emit(item.id)"
+        >
+          <mat-icon>edit</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+
+  @if (inflationIndexes() && inflationIndexes().length === 0) {
+    <div class="p-8 text-center text-slate-500">
+      {{ 'inflationIndexes.table.empty' | translate }}
+    </div>
+  }
+</div>

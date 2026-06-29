@@ -1,0 +1,43 @@
+<form class="grid gap-4" [formGroup]="formGroup">
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'owners.form.name' | translate }}</mat-label>
+
+    <input matInput [formControlName]="fields.Name" />
+
+    @if (nameField?.hasError('required')) {
+      <mat-error>
+        {{ 'owners.form.validation.nameRequired' | translate }}
+      </mat-error>
+    }
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'owners.form.email' | translate }}</mat-label>
+
+    <input matInput type="email" [formControlName]="fields.Email" />
+
+    @if (emailField?.hasError('required')) {
+      <mat-error>
+        {{ 'owners.form.validation.emailRequired' | translate }}
+      </mat-error>
+    }
+
+    @if (emailField?.hasError('email')) {
+      <mat-error>
+        {{ 'owners.form.validation.emailInvalid' | translate }}
+      </mat-error>
+    }
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'owners.form.documentNumber' | translate }}</mat-label>
+
+    <input matInput [formControlName]="fields.DocumentNumber" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'owners.form.phone' | translate }}</mat-label>
+
+    <input matInput [formControlName]="fields.Phone" />
+  </mat-form-field>
+</form>

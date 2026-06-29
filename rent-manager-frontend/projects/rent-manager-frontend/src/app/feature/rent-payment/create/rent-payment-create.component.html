@@ -1,0 +1,37 @@
+<section class="space-y-6">
+  <header class="flex items-center justify-between">
+    <h1 class="text-2xl font-bold">
+      {{ 'rentPayments.create.title' | translate }}
+    </h1>
+  </header>
+
+  <rm-rent-payment-form [suggestion]="suggestionSignal()" />
+
+  @if (suggestionSignal()?.suggested_adjustment_status === 'missing_indexes') {
+    <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+      <div class="flex items-start gap-2">
+        <mat-icon class="!text-base">warning</mat-icon>
+
+        <p>
+          {{ suggestionSignal()?.suggested_adjustment_message }}
+        </p>
+      </div>
+    </div>
+  }
+
+  <footer class="flex justify-end gap-3">
+    <button mat-stroked-button type="button" (click)="cancel()">
+      {{ 'common.cancel' | translate }}
+    </button>
+
+    <button
+      mat-flat-button
+      color="primary"
+      type="button"
+      [disabled]="isLoadingSignal()"
+      (click)="save()"
+    >
+      {{ 'common.save' | translate }}
+    </button>
+  </footer>
+</section>

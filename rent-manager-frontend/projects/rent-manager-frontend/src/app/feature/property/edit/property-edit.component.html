@@ -1,0 +1,46 @@
+<section class="space-y-6">
+  <div>
+    <button
+      class="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-slate-950"
+      type="button"
+      (click)="goToList$.next()"
+    >
+      <mat-icon class="!text-lg">arrow_back</mat-icon>
+      {{ 'properties.edit.back' | translate }}
+    </button>
+
+    <h1 class="mt-4 text-3xl font-extrabold tracking-tight text-slate-950">
+      {{ 'properties.edit.title' | translate }}
+    </h1>
+
+    <p class="mt-2 text-slate-500">
+      {{ 'properties.edit.subtitle' | translate }}
+    </p>
+  </div>
+
+  @if (errorSignal()) {
+    <div class="rounded-2xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+      {{ errorSignal() }}
+    </div>
+  }
+
+  <div class="rounded-3xl bg-white p-6 shadow-sm">
+    <rm-property-form #propertyForm [property]="selectedPropertySignal()" />
+
+    <div class="mt-6 flex justify-end gap-3">
+      <button mat-stroked-button type="button" (click)="goToList$.next()">
+        {{ 'properties.edit.cancel' | translate }}
+      </button>
+
+      <button
+        mat-flat-button
+        color="primary"
+        type="button"
+        [disabled]="isLoadingSignal()"
+        (click)="update$.next()"
+      >
+        {{ 'properties.edit.save' | translate }}
+      </button>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,15 @@
+export enum RentPaymentFormField {
+  RentalContractId = 'rental_contract_id',
+  Period = 'period',
+  DueDate = 'due_date',
+  PaymentDate = 'payment_date',
+  BaseAmount = 'base_amount',
+  SuggestedAdjustmentPercentage = 'suggested_adjustment_percentage',
+  AppliedAdjustmentPercentage = 'applied_adjustment_percentage',
+  SuggestedInterestAmount = 'suggested_interest_amount',
+  AppliedInterestAmount = 'applied_interest_amount',
+  TotalAmount = 'total_amount',
+  PaidAmount = 'paid_amount',
+  IsPaid = 'is_paid',
+  Notes = 'notes',
+}

@@ -1,0 +1,68 @@
+<section class="space-y-6">
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <p class="text-sm font-semibold uppercase tracking-[0.25em] text-slate-400">
+        {{ 'rentContracts.list.eyebrow' | translate }}
+      </p>
+
+      <h1 class="mt-2 text-3xl font-extrabold tracking-tight text-slate-950">
+        {{ 'rentContracts.list.title' | translate }}
+      </h1>
+
+      <p class="mt-2 text-slate-500">
+        {{ 'rentContracts.list.subtitle' | translate }}
+      </p>
+    </div>
+
+    <a mat-flat-button color="primary" routerLink="/app/rent-contracts/create">
+      <mat-icon>add</mat-icon>
+      {{ 'rentContracts.list.new' | translate }}
+    </a>
+  </div>
+
+  <div class="rounded-3xl bg-white p-5 shadow-sm">
+    <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+      <mat-form-field appearance="outline" class="w-full md:max-w-md">
+        <mat-label>{{ 'rentContracts.list.propertyFilter' | translate }}</mat-label>
+
+        <mat-select [ngModel]="propertyIdSignal()" (ngModelChange)="onPropertyChange($event)">
+          <mat-option [value]="0">
+            {{ 'rentContracts.list.allProperties' | translate }}
+          </mat-option>
+
+          @for (property of propertiesSignal(); track property.id) {
+            <mat-option [value]="property.id">
+              {{ property.title }}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="clearFilter$.next()"
+        [disabled]="propertyIdSignal() === 0"
+      >
+        {{ 'rentContracts.list.clear' | translate }}
+      </button>
+    </div>
+
+    <div class="relative mt-6">
+      <rm-rent-contract-list-table
+        [rentContracts]="rentContractsSignal()"
+        (view)="viewRentContract($event)"
+        (edit)="editRentContract($event)"
+      />
+    </div>
+
+    <mat-paginator
+      class="mt-4"
+      [length]="100"
+      [pageIndex]="pageSignal() - 1"
+      [pageSize]="limitSignal()"
+      [pageSizeOptions]="[5, 10, 25, 50]"
+      (page)="onPageChange($event)"
+    />
+  </div>
+</section>

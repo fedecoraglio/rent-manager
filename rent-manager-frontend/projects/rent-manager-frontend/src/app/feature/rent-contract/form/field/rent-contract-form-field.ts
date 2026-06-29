@@ -1,0 +1,16 @@
+export enum RentContractFormField {
+  PropertyId = 'property_id',
+  TenantId = 'tenant_id',
+  StatusId = 'status_id',
+  InterestCalculationTypeId = 'interest_calculation_type_id',
+  AdjustmentTypeId = 'adjustment_type_id',
+  StartDate = 'start_date',
+  EndDate = 'end_date',
+  MonthlyAmount = 'monthly_amount',
+  DepositAmount = 'deposit_amount',
+  Currency = 'currency',
+  DueDay = 'due_day',
+  DailyInterestPercentage = 'daily_interest_percentage',
+  AdjustmentFrequencyMonths = 'adjustment_frequency_months',
+  Notes = 'notes',
+}

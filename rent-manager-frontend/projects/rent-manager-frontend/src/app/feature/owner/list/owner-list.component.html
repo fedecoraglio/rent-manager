@@ -1,0 +1,80 @@
+<section class="space-y-6">
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <p class="text-sm font-semibold uppercase tracking-[0.25em] text-slate-400">
+        {{ 'owners.list.eyebrow' | translate }}
+      </p>
+
+      <h1 class="mt-2 text-3xl font-extrabold tracking-tight text-slate-950">
+        {{ 'owners.list.title' | translate }}
+      </h1>
+
+      <p class="mt-2 text-slate-500">
+        {{ 'owners.list.subtitle' | translate }}
+      </p>
+    </div>
+
+    <a mat-flat-button color="primary" routerLink="/app/owners/create">
+      <mat-icon>add</mat-icon>
+      {{ 'owners.list.new' | translate }}
+    </a>
+  </div>
+
+  <div class="rounded-3xl bg-white p-5 shadow-sm">
+    <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+      <mat-form-field appearance="outline" class="w-full md:max-w-md">
+        <mat-label>{{ 'owners.list.searchPlaceholder' | translate }}</mat-label>
+
+        <input
+          matInput
+          type="text"
+          [ngModel]="searchValueSignal()"
+          (ngModelChange)="searchValueSignal.set($event)"
+          (keyup.enter)="search$.next()"
+        />
+
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <div class="flex gap-2">
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="clearSearch$.next()"
+          [disabled]="!searchValueSignal().trim()"
+        >
+          {{ 'owners.list.clear' | translate }}
+        </button>
+
+        <button mat-flat-button color="primary" type="button" (click)="search$.next()">
+          {{ 'owners.list.search' | translate }}
+        </button>
+      </div>
+    </div>
+
+    @if (errorSignal()) {
+      <div class="mt-4 rounded-2xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+        {{ errorSignal() }}
+      </div>
+    }
+
+    <div class="relative mt-6">
+      @if (isLoadingSignal()) {
+        <div class="absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-white/70">
+          <mat-spinner diameter="36" />
+        </div>
+      }
+
+      <rm-owner-list-table [owners]="ownersSignal()" (view)="view($event)" (edit)="edit($event)" />
+    </div>
+
+    <mat-paginator
+      class="mt-4"
+      [length]="100"
+      [pageIndex]="pageSignal() - 1"
+      [pageSize]="limitSignal()"
+      [pageSizeOptions]="[5, 10, 25, 50]"
+      (page)="onPageChange($event)"
+    />
+  </div>
+</section>
