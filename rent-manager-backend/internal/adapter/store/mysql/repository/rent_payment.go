@@ -254,7 +254,7 @@ func (rpr *RentPaymentRepository) GetRentPaymentByContractIDAndPeriod(
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, domain.ErrDataNotFound
+			return nil, nil
 		}
 
 		slog.Error("[GetRentPaymentByContractIDAndPeriod] failed to scan row", "err", err)

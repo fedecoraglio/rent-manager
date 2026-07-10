@@ -40,7 +40,7 @@ export class RentContractViewComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly dailyInterestWritable = signal(0);
-  private readonly interestTypeNameWritable = signal('');
+  private readonly interestTypeCodeWritable = signal('');
   private readonly adjustmentTypeNameWritable = signal('');
   private readonly contractStatusWritable = signal('');
   private readonly rentContract$ = new BehaviorSubject<RentContract | null>(null);
@@ -49,7 +49,7 @@ export class RentContractViewComponent implements OnInit, OnDestroy {
 
   readonly dailyInterestSignal = computed(() => this.dailyInterestWritable());
   readonly adjustmentTypeNameSignal = computed(() => this.adjustmentTypeNameWritable());
-  readonly interestTypeNameSignal = computed(() => this.interestTypeNameWritable());
+  readonly interestTypeCodeSignal = computed(() => this.interestTypeCodeWritable());
   readonly contractStatusSignal = computed(() => this.contractStatusWritable());
   readonly goToEdit$ = new Subject<void>();
   readonly goToList$ = new Subject<void>();
@@ -98,7 +98,7 @@ export class RentContractViewComponent implements OnInit, OnDestroy {
             .interestCalculationTypesSignal()
             .find((it) => it.id === rentContract?.interest_calculation_type_id);
           if (interestType) {
-            this.interestTypeNameWritable.set(interestType.name);
+            this.interestTypeCodeWritable.set(interestType.code);
           }
           const status = this.contractCatalogService
             .contractStatusesSignal()

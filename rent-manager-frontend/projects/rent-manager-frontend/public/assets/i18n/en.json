@@ -1,4 +1,6 @@
 {
+  "daily_from_month_first_day":  "Daily interest starting from the first day of the month",
+  "daily_from_due_day_next_day":  "Daily interest starting the day after the due date",
   "app": {
     "name": "RentManager",
     "subtitle": "Admin"

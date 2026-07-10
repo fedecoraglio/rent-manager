@@ -131,7 +131,7 @@
         <mat-select [formControlName]="fields.InterestCalculationTypeId">
           @for (type of interestCalculationTypesSignal(); track type.id) {
             <mat-option [value]="type.id">
-              {{ type.name }}
+              {{ type.code | translate }}
             </mat-option>
           }
         </mat-select>
@@ -154,7 +154,7 @@
         <mat-select [formControlName]="fields.AdjustmentTypeId">
           @for (type of rentAdjustmentTypesSignal(); track type.id) {
             <mat-option [value]="type.id">
-              {{ type.name }}
+              {{ type.code | translate }}
             </mat-option>
           }
         </mat-select>
