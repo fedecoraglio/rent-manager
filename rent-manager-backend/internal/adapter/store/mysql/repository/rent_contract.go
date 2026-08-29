@@ -365,12 +365,15 @@ func (rcr *RentalContractRepository) baseRentalContractQuery() sq.SelectBuilder 
 			"cst.cst_name",
 			"p.pro_id",
 			"p.pro_title",
+			"t.ten_id",
+			"t.ten_name",
 		).
 		From("rental_contracts rc").
 		LeftJoin("interest_calculation_types ict ON ict.ict_id = rc.ict_id").
 		LeftJoin("rent_adjustment_types rat ON rat.rat_id = rc.rat_id").
 		LeftJoin("contract_statuses cst ON cst.cst_id = rc.cst_id").
-		LeftJoin("properties p ON p.pro_id = rc.pro_id")
+		LeftJoin("properties p ON p.pro_id = rc.pro_id").
+		LeftJoin("tenants t ON t.ten_id = rc.ten_id")
 }
 
 type rentalContractScanner interface {
@@ -391,6 +394,8 @@ func scanRentalContract(scanner rentalContractScanner) (domain.RentalContract, e
 	var statusName sql.NullString
 	var propertyID sql.NullInt64
 	var propertyTitle sql.NullString
+	var tenantID sql.NullInt64
+	var tenantTitle sql.NullString
 
 	err := scanner.Scan(
 		&rentalContract.ID,
@@ -422,6 +427,8 @@ func scanRentalContract(scanner rentalContractScanner) (domain.RentalContract, e
 		&statusName,
 		&propertyID,
 		&propertyTitle,
+		&tenantID,
+		&tenantTitle,
 	)
 	if err != nil {
 		return rentalContract, err
@@ -453,6 +460,10 @@ func scanRentalContract(scanner rentalContractScanner) (domain.RentalContract, e
 
 	if propertyID.Valid {
 		rentalContract.Property = &domain.Property{ID: propertyID.Int64, Title: propertyTitle.String}
+	}
+
+	if tenantID.Valid {
+		rentalContract.Tenant = &domain.Tenant{ID: tenantID.Int64, Name: tenantTitle.String}
 	}
 
 	return rentalContract, nil

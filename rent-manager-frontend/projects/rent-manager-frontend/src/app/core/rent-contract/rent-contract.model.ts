@@ -1,3 +1,6 @@
+import {Property} from "@core/property/property.model";
+import {Tenant} from "@core/tenant/tenant-core.model";
+
 export interface RentContract {
   id: number;
   property_id: number;
@@ -14,6 +17,8 @@ export interface RentContract {
   daily_interest_percentage: number;
   adjustment_frequency_months: number;
   notes: string;
+  property?: Property | null;
+  tenant?: Tenant | null;
   created_at: string;
   updated_at: string;
 }

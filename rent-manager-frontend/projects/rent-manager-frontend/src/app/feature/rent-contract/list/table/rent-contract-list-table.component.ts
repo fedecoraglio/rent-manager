@@ -6,11 +6,12 @@ import { MatTableModule } from '@angular/material/table';
 import { TranslatePipe } from '@ngx-translate/core';
 
 import { RentContract } from '@core/rent-contract/rent-contract.model';
+import {CurrencyPipe} from "@angular/common";
 
 @Component({
   selector: 'rm-rent-contract-list-table',
   standalone: true,
-  imports: [MatTableModule, MatIconModule, MatButtonModule, TranslatePipe],
+  imports: [MatTableModule, MatIconModule, MatButtonModule, TranslatePipe, CurrencyPipe],
   templateUrl: './rent-contract-list-table.component.html',
   styleUrl: './rent-contract-list-table.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -22,13 +23,11 @@ export class RentContractListTableComponent {
   readonly edit = output<number>();
 
   readonly displayedColumns = [
-    'id',
-    'property_id',
-    'tenant_id',
+    'property',
+    'tenant',
     'start_date',
     'end_date',
     'monthly_amount',
-    'currency',
     'actions',
   ];
 }
