@@ -80,7 +80,7 @@
                 <span class="font-semibold text-slate-950"
                   >{{ 'rentContracts.view.monthlyAmount' | translate }}:</span
                 >
-                {{ contract.currency }} {{ contract.monthly_amount }}
+                {{ contract.currency }} {{ contract.monthly_amount | currency }}
               </p>
             </div>
           }

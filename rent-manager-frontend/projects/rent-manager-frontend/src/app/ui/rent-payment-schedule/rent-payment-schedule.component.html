@@ -46,9 +46,7 @@
 
       <td mat-cell *matCellDef="let item" class="text-right">
         @if (item.is_paid) {
-          <button mat-icon-button type="button" (click)="editPayment.emit(item)">
-            <mat-icon>edit</mat-icon>
-          </button>
+          -
         } @else {
           <button
             mat-flat-button

@@ -22,11 +22,12 @@ import { RentPaymentScheduleComponent } from '@ui/rent-payment-schedule/rent-pay
 import { PropertyReadService } from '@core/property/property-read.service';
 import { ContractCatalogService } from '@core/contract-catalog/contract-catalog.service';
 import { RentContract } from '@core/rent-contract/rent-contract.model';
+import {CurrencyPipe} from "@angular/common";
 
 @Component({
   selector: 'rm-rent-contract-view',
   standalone: true,
-  imports: [MatButtonModule, MatIconModule, TranslatePipe, RentPaymentScheduleComponent],
+  imports: [MatButtonModule, MatIconModule, TranslatePipe, CurrencyPipe, RentPaymentScheduleComponent],
   templateUrl: './rent-contract-view.component.html',
   styleUrl: './rent-contract-view.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
