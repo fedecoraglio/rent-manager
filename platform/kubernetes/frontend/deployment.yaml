@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: frontend
+  namespace: rent-manager
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: frontend
+
+  template:
+    metadata:
+      labels:
+        app: frontend
+
+    spec:
+      containers:
+        - name: frontend
+          image: ghcr.io/fedecoraglio/rent-manager-frontend:develop
+          imagePullPolicy: Always
+
+          ports:
+            - containerPort: 80
+
+          volumeMounts:
+            - name: frontend-config
+              mountPath: /usr/share/nginx/html/assets/config.json
+              subPath: config.json
+
+      volumes:
+        - name: frontend-config
+          configMap:
+            name: frontend-config
