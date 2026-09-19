@@ -1,5 +1,7 @@
 .idea/*
 .idea/
+
+# Frontend
 rent-manager-frontend/node_modules/
 rent-manager-frontend/dist/
 rent-manager-frontend/.angular/
@@ -7,13 +9,20 @@ rent-manager-frontend/.env
 rent-manager-frontend/.DS_Store
 rent-manager-frontend/.idea
 
-# Default ignored files
+# Backend
 rent-manager-backend/.idea
 rent-manager-backend/shelf/
 rent-manager-backend/workspace.xml
-# Editor-based HTTP Client requests
 rent-manager-backend/httpRequests/
-# Datasource local storage ignored files
 rent-manager-backend/dataSources/
 rent-manager-backend/dataSources.local.xml
 rent-manager-backend/.env
+
+# Kubernetes local secrets
+platform/kubernetes/**/secret.yaml
+
+# Docker runtime database data
+platform/docker/**/mysql/data/
+
+# Docker local environment files
+platform/docker/.env

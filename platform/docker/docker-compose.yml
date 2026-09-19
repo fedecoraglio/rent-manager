@@ -1,0 +1,56 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: rent-manager-live-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks:
+      - rent-manager-live
+
+  backend:
+    build:
+      context: ../../rent-manager-backend
+      dockerfile: Dockerfile
+    container_name: rent-manager-live-backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "8082:8080"
+    networks:
+      - rent-manager-live
+
+  frontend:
+    build:
+      context: ../../rent-manager-frontend
+      dockerfile: Dockerfile
+    container_name: rent-manager-live-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "4400:80"
+    volumes:
+      - ./frontend-config/config.json:/usr/share/nginx/html/assets/config.json
+    networks:
+      - rent-manager-live
+
+volumes:
+  mysql-data:
+
+networks:
+  rent-manager-live:
+    driver: bridge
