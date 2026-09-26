@@ -18,6 +18,14 @@ rent-manager-backend/dataSources/
 rent-manager-backend/dataSources.local.xml
 rent-manager-backend/.env
 
+# Backend ai
+rent-manager-ai/target/
+rent-manager-ai/.env
+rent-manager-ai/storage/
+rent-manager-ai/.idea/
+rent-manager-ai/*.iml
+
+
 # Kubernetes local secrets
 platform/kubernetes/**/secret.yaml
 

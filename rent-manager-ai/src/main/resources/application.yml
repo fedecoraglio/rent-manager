@@ -1,0 +1,53 @@
+server:
+  port: ${SERVER_PORT:8081}
+
+spring:
+  application:
+    name: rent-manager-ai
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 21MB
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5433}/${POSTGRES_DB:rent_manager_ai}?connectTimeout=3&socketTimeout=5
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+    hikari:
+      connection-timeout: 3000
+      validation-timeout: 2000
+  jdbc:
+    template:
+      query-timeout: 3s
+  ai:
+    ollama:
+      base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
+      chat:
+        options:
+          model: qwen3:4b
+      embedding:
+        options:
+          model: nomic-embed-text
+
+app:
+  documents:
+    storage-path: ${DOCUMENT_STORAGE_PATH:./storage}
+  indexing:
+    transaction-timeout-seconds: ${INDEXING_TIMEOUT_SECONDS:300}
+    embedding-read-timeout-seconds: ${OLLAMA_READ_TIMEOUT_SECONDS:120}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-components: always
+      show-details: never
+      probes:
+        enabled: true
+      group:
+        readiness:
+          include: readinessState,db,pgvector,ollama
+        liveness:
+          include: livenessState
