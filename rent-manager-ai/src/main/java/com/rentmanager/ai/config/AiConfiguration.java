@@ -2,9 +2,13 @@ package com.rentmanager.ai.config;
 
 import java.time.Duration;
 
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.embedding.EmbeddingModel;
+import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.ai.ollama.OllamaEmbeddingModel;
 import org.springframework.ai.ollama.api.OllamaApi;
+import org.springframework.ai.ollama.api.OllamaChatOptions;
 import org.springframework.ai.ollama.api.OllamaEmbeddingOptions;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.ai.vectorstore.pgvector.PgVectorStore;
@@ -18,6 +22,7 @@ import org.springframework.web.client.RestClient;
 
 @Configuration(proxyBeanMethods = false)
 public class AiConfiguration {
+
     @Bean
     public EmbeddingModel embeddingModel(@Value("${spring.ai.ollama.base-url}") final String baseUrl,
                                          @Value("${app.indexing.embedding-read-timeout-seconds}") final int timeoutSeconds) {
@@ -43,5 +48,30 @@ public class AiConfiguration {
                 .initializeSchema(false)
                 .vectorTableValidationsEnabled(true)
                 .build();
+    }
+
+    @Bean
+    public ChatModel chatModel(
+            @Value("${spring.ai.ollama.base-url}") final String baseUrl,
+            @Value("${app.indexing.embedding-read-timeout-seconds}") final int timeoutSeconds) {
+
+        final var factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(Duration.ofSeconds(3));
+        factory.setReadTimeout(Duration.ofSeconds(timeoutSeconds));
+
+        final var api = OllamaApi.builder()
+                .baseUrl(baseUrl)
+                .restClientBuilder(RestClient.builder().requestFactory(factory))
+                .build();
+
+        return OllamaChatModel.builder()
+                .ollamaApi(api)
+                .options(OllamaChatOptions.builder().model("qwen3:4b").temperature(0.1).build())
+                .build();
+    }
+
+    @Bean
+    public ChatClient chatClient(final ChatModel chatModel) {
+        return ChatClient.builder(chatModel).build();
     }
 }
