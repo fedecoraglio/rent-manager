@@ -1,13 +1,10 @@
 package com.rentmanager.ai.application.rag;
 
-import java.util.stream.Collectors;
-
 import com.rentmanager.ai.port.out.DocumentRetriever;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.model.ChatModel;
-import org.springframework.ai.ollama.OllamaChatModel;
-import org.springframework.ai.ollama.api.OllamaChatOptions;
 import org.springframework.stereotype.Service;
+
+import java.util.stream.Collectors;
 
 @Service
 public final class RagService {
