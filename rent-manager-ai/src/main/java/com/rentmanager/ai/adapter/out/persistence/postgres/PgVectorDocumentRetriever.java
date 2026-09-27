@@ -4,16 +4,18 @@ import java.util.List;
 import java.util.Map;
 
 import com.rentmanager.ai.domain.document.RetrievedDocumentChunk;
+import com.rentmanager.ai.port.out.DocumentRetriever;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.ai.vectorstore.filter.FilterExpressionBuilder;
 import org.springframework.stereotype.Component;
-import com.rentmanager.ai.port.out.DocumentRetriever;
 
 @Component
 public final class PgVectorDocumentRetriever implements DocumentRetriever {
+
     private static final int DEFAULT_TOP_K = 10;
+
     private final VectorStore vectorStore;
 
     public PgVectorDocumentRetriever(final VectorStore vectorStore) {
@@ -33,15 +35,29 @@ public final class PgVectorDocumentRetriever implements DocumentRetriever {
                 filters.eq("contractId", contractId)
         ).build();
 
+        final String retrievalQuery = buildRetrievalQuery(question);
+
         return vectorStore.similaritySearch(
                         SearchRequest.builder()
-                                .query(question)
+                                .query(retrievalQuery)
                                 .topK(DEFAULT_TOP_K)
                                 .filterExpression(filter)
                                 .build()
                 ).stream()
                 .map(this::map)
                 .toList();
+    }
+
+    private String buildRetrievalQuery(final String question) {
+        return """
+                Rental contract information.
+                Contract terms and conditions.
+                Contract term, duration, validity, start date, end date and expiration date.
+                Fecha de inicio, término, duración, vigencia, finalización y vencimiento del contrato de locación.
+                
+                User question:
+                %s
+                """.formatted(question);
     }
 
     private RetrievedDocumentChunk map(final Document document) {

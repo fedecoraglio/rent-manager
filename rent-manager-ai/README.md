@@ -255,3 +255,12 @@ Tailwind styling, translations, `core` API/read services and feature write servi
 belongs under `feature/rent-contract/view` with document/assistant components and service-owned
 HTTP calls. Extend `core/config/AppConfig` and `/assets/config.json` with an independent
 `aiApiBaseUrl`, following the existing `apiBaseUrl` naming. No Angular files change in Phases 1–2.
+
+## Commands
+```sh
+docker compose logs rent-manager-ai --tail=100
+docker compose up -d --build rent-manager-ai
+docker compose exec ollama ollama list
+docker compose exec ollama ollama pull nomic-embed-text
+docker compose exec ollama ollama pull qwen2.5:3b-instruct
+```
