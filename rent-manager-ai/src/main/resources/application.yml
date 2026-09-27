@@ -31,9 +31,13 @@ spring:
 app:
   documents:
     storage-path: ${DOCUMENT_STORAGE_PATH:./storage}
+
   indexing:
     transaction-timeout-seconds: ${INDEXING_TIMEOUT_SECONDS:300}
-    embedding-read-timeout-seconds: ${OLLAMA_READ_TIMEOUT_SECONDS:120}
+    embedding-read-timeout-seconds: ${OLLAMA_EMBEDDING_READ_TIMEOUT_SECONDS:120}
+
+  chat:
+    read-timeout-seconds: ${OLLAMA_CHAT_READ_TIMEOUT_SECONDS:300}
 
 management:
   endpoints:

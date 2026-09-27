@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.rentmanager.ai.domain.document.RetrievedDocumentChunk;
+import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.ai.vectorstore.filter.FilterExpressionBuilder;
@@ -12,7 +13,7 @@ import com.rentmanager.ai.port.out.DocumentRetriever;
 
 @Component
 public final class PgVectorDocumentRetriever implements DocumentRetriever {
-    private static final int DEFAULT_TOP_K = 5;
+    private static final int DEFAULT_TOP_K = 10;
     private final VectorStore vectorStore;
 
     public PgVectorDocumentRetriever(final VectorStore vectorStore) {
@@ -25,7 +26,7 @@ public final class PgVectorDocumentRetriever implements DocumentRetriever {
             final String contractId,
             final String question) {
 
-        final var filters = new FilterExpressionBuilder();
+        final FilterExpressionBuilder filters = new FilterExpressionBuilder();
 
         final var filter = filters.and(
                 filters.eq("propertyId", propertyId),
@@ -43,7 +44,7 @@ public final class PgVectorDocumentRetriever implements DocumentRetriever {
                 .toList();
     }
 
-    private RetrievedDocumentChunk map(final org.springframework.ai.document.Document document) {
+    private RetrievedDocumentChunk map(final Document document) {
         final var metadata = document.getMetadata();
 
         return new RetrievedDocumentChunk(

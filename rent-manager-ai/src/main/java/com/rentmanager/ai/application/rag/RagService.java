@@ -1,9 +1,11 @@
 package com.rentmanager.ai.application.rag;
 
+import com.rentmanager.ai.domain.document.RetrievedDocumentChunk;
 import com.rentmanager.ai.port.out.DocumentRetriever;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -12,27 +14,25 @@ public final class RagService {
     private final DocumentRetriever documentRetriever;
     private final ChatClient chatClient;
 
-    public RagService(
-            final DocumentRetriever documentRetriever,
-            final ChatClient chatClient) {
+    public RagService(final DocumentRetriever documentRetriever, final ChatClient chatClient) {
         this.documentRetriever = documentRetriever;
         this.chatClient = chatClient;
     }
 
-    public String ask(
-            final String propertyId,
-            final String contractId,
-            final String question) {
+    public String ask(final String propertyId, final String contractId, final String question) {
 
-        final var chunks = documentRetriever.retrieve(
-                propertyId,
-                contractId,
-                question
-        );
+        final List<RetrievedDocumentChunk> chunks = documentRetriever.retrieve(propertyId, contractId, question);
 
         if (chunks.isEmpty()) {
             return "No relevant information was found in the contract documents.";
         }
+
+        chunks.forEach(chunk -> {
+            System.out.println("====== RETRIEVED CHUNK ======");
+            System.out.println("File: " + chunk.filename());
+            System.out.println("Page: " + chunk.page());
+            System.out.println("Text: " + chunk.text());
+        });
 
         final String context = chunks.stream()
                 .map(chunk -> """

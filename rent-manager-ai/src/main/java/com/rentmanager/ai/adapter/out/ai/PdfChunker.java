@@ -27,24 +27,39 @@ public final class PdfChunker {
 
         final List<Document> scopedPages = pages.stream()
                 .filter(page -> page.getText() != null && !page.getText().isBlank())
-                .map(page -> new Document(page.getText(), Map.of(
-                        "documentId", document.id().toString(),
-                        "propertyId", document.propertyId(),
-                        "contractId", document.contractId(),
-                        "documentType", document.type().name(),
-                        "filename", document.originalFilename(),
-                        "page", page.getMetadata().get(PagePdfDocumentReader.METADATA_START_PAGE_NUMBER))))
+                .map(page -> new Document(
+                        normalize(page.getText()),
+                        Map.of(
+                                "documentId", document.id().toString(),
+                                "propertyId", document.propertyId(),
+                                "contractId", document.contractId(),
+                                "documentType", document.type().name(),
+                                "filename", document.originalFilename(),
+                                "page", page.getMetadata().get(PagePdfDocumentReader.METADATA_START_PAGE_NUMBER)
+                        )
+                ))
                 .toList();
 
         // The splitter copies each page's metadata onto every resulting chunk.
-        final var splitter = TokenTextSplitter.builder().withChunkSize(800)
-                .withMinChunkLengthToEmbed(0).build();
+        final var splitter = TokenTextSplitter.builder()
+                .withChunkSize(350)
+                .withMinChunkSizeChars(100)
+                .withMinChunkLengthToEmbed(5)
+                .withKeepSeparator(true)
+                .build();
         final List<Document> chunks = splitter.apply(scopedPages);
         if (chunks.isEmpty()) {
             throw new DocumentException(HttpStatus.UNPROCESSABLE_CONTENT,
                     "No readable text was found in the PDF. Scanned documents require OCR, which is not supported.");
         }
         return chunks;
+    }
+
+    private static String normalize(final String text) {
+        return text
+                .replace('\u00A0', ' ')
+                .replaceAll("\\s+", " ")
+                .trim();
     }
 
     // Spring AI 2.0.1 exposes its PDFBox document as protected but has no close method.

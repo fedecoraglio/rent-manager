@@ -24,16 +24,27 @@ import org.springframework.web.client.RestClient;
 public class AiConfiguration {
 
     @Bean
-    public EmbeddingModel embeddingModel(@Value("${spring.ai.ollama.base-url}") final String baseUrl,
-                                         @Value("${app.indexing.embedding-read-timeout-seconds}") final int timeoutSeconds) {
+    public EmbeddingModel embeddingModel(
+            @Value("${spring.ai.ollama.base-url}") final String baseUrl,
+            @Value("${app.indexing.embedding-read-timeout-seconds}") final int timeoutSeconds) {
+
         final var factory = new SimpleClientHttpRequestFactory();
         factory.setConnectTimeout(Duration.ofSeconds(3));
         factory.setReadTimeout(Duration.ofSeconds(timeoutSeconds));
-        final var api = OllamaApi.builder().baseUrl(baseUrl)
-                .restClientBuilder(RestClient.builder().requestFactory(factory)).build();
-        // Explicit wiring: no chat model bean, automatic model pulls or cloud providers.
-        return OllamaEmbeddingModel.builder().ollamaApi(api)
-                .options(OllamaEmbeddingOptions.builder().model("nomic-embed-text").truncate(false).build())
+
+        final var api = OllamaApi.builder()
+                .baseUrl(baseUrl)
+                .restClientBuilder(RestClient.builder().requestFactory(factory))
+                .build();
+
+        return OllamaEmbeddingModel.builder()
+                .ollamaApi(api)
+                .options(
+                        OllamaEmbeddingOptions.builder()
+                                .model("nomic-embed-text")
+                                .truncate(false)
+                                .build()
+                )
                 .build();
     }
 
@@ -53,9 +64,9 @@ public class AiConfiguration {
     @Bean
     public ChatModel chatModel(
             @Value("${spring.ai.ollama.base-url}") final String baseUrl,
-            @Value("${app.indexing.embedding-read-timeout-seconds}") final int timeoutSeconds) {
+            @Value("${app.chat.read-timeout-seconds}") final int timeoutSeconds) {
 
-        final var factory = new SimpleClientHttpRequestFactory();
+        final SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         factory.setConnectTimeout(Duration.ofSeconds(3));
         factory.setReadTimeout(Duration.ofSeconds(timeoutSeconds));
 
@@ -66,7 +77,12 @@ public class AiConfiguration {
 
         return OllamaChatModel.builder()
                 .ollamaApi(api)
-                .options(OllamaChatOptions.builder().model("qwen3:4b").temperature(0.1).build())
+                .options(
+                        OllamaChatOptions.builder()
+                                .model("qwen2.5:3b-instruct")
+                                .temperature(0.1)
+                                .build()
+                )
                 .build();
     }
 

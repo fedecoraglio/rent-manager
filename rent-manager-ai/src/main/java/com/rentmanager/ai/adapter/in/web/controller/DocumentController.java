@@ -1,10 +1,11 @@
-package com.rentmanager.ai.adapter.in.web;
+package com.rentmanager.ai.adapter.in.web.controller;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 
+import com.rentmanager.ai.adapter.in.web.response.DocumentResponse;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;

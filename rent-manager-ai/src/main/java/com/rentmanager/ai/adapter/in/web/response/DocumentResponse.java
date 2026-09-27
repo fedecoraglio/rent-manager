@@ -1,4 +1,4 @@
-package com.rentmanager.ai.adapter.in.web;
+package com.rentmanager.ai.adapter.in.web.response;
 
 import java.time.Instant;
 import java.util.UUID;

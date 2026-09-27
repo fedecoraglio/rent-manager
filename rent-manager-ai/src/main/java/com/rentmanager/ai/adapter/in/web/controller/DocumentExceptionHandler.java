@@ -1,4 +1,4 @@
-package com.rentmanager.ai.adapter.in.web;
+package com.rentmanager.ai.adapter.in.web.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
