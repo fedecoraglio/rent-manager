@@ -214,7 +214,29 @@ Frontend route: /
 Backend API route: /v1
 ```
 
-With Ingress, normal local use requires only the Ingress Controller port-forward.
+## Kubernate Local
+
+Run the application
 ```cmd
 kubectl port-forward -n ingress-nginx service/ingress-nginx-controller 8085:80
+```
+
+Password ArgoCD.
+```cmd
+kubectl -n argocd get secret argocd-initial-admin-secret `
+  -o jsonpath="{.data.password}" |
+  ForEach-Object {
+    [System.Text.Encoding]::UTF8.GetString(
+      [System.Convert]::FromBase64String($_)
+    )
+  }
+```
+
+Database
+```cmd
+jdbc:mysql://localhost:3307/rent_manager?useSSL=false&allowPublicKeyRetrieval=true
+```
+Database port-forward
+```cmd
+kubectl port-forward -n rent-manager svc/mysql 3307:3306
 ```
