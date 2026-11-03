@@ -3,7 +3,7 @@ name: Build Frontend Image
 on:
   push:
     branches:
-      - develop
+      - master
     paths:
       - "rent-manager-frontend/**"
       - ".github/workflows/frontend-image.yml"
@@ -37,4 +37,4 @@ jobs:
           context: ./rent-manager-frontend
           file: ./rent-manager-frontend/Dockerfile
           push: true
-          tags: ghcr.io/fedecoraglio/rent-manager-frontend:develop
+          tags: ghcr.io/fedecoraglio/rent-manager-frontend:master

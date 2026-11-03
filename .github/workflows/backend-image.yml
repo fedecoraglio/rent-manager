@@ -3,7 +3,7 @@ name: Build Backend Image
 on:
   push:
     branches:
-      - develop
+      - master
     paths:
       - "rent-manager-backend/**"
       - ".github/workflows/backend-image.yml"
@@ -37,4 +37,4 @@ jobs:
           context: ./rent-manager-backend
           file: ./rent-manager-backend/Dockerfile
           push: true
-          tags: ghcr.io/fedecoraglio/rent-manager-backend:develop
+          tags: ghcr.io/fedecoraglio/rent-manager-backend:master
