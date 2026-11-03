@@ -94,6 +94,15 @@ func calculateInterestAmount(
 		return 0
 	}
 
+	// Interest applies only after the entire due date has passed.
+	firstOverdueDate := time.Date(
+		period.Year(), period.Month(), int(rentalContract.DueDay)+1,
+		0, 0, 0, 0, time.UTC,
+	)
+	if paymentDate.Before(firstOverdueDate) {
+		return 0
+	}
+
 	startDate := getInterestStartDate(
 		rentalContract,
 		period,

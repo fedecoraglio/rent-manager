@@ -232,6 +232,11 @@ kubectl -n argocd get secret argocd-initial-admin-secret `
   }
 ```
 
+Access ArgoCD
+```cmd
+kubectl port-forward -n argocd svc/argocd-server 8080:443
+```
+
 Database
 ```cmd
 jdbc:mysql://localhost:3307/rent_manager?useSSL=false&allowPublicKeyRetrieval=true
@@ -239,4 +244,13 @@ jdbc:mysql://localhost:3307/rent_manager?useSSL=false&allowPublicKeyRetrieval=tr
 Database port-forward
 ```cmd
 kubectl port-forward -n rent-manager svc/mysql 3307:3306
+```
+
+Deploy to live
+```cmd
+git push origin develop
+kubectl -n argocd annotate application rent-manager argocd.argoproj.io/refresh=normal --overwrite
+kubectl -n argocd get application rent-manager
+kubectl -n rent-manager rollout restart deployment/backend
+kubectl -n rent-manager rollout status deployment/backend --timeout=120s
 ```
