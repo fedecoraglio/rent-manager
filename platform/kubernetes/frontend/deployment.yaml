@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: ghcr.io/fedecoraglio/rent-manager-frontend:develop
+          image: ghcr.io/fedecoraglio/rent-manager-frontend:1.0.0@sha256:ca56d5447793c0fcb63f9c01d30d417a8c9fc68819a14ad23f61669881492b45
           imagePullPolicy: Always
 
           ports:
