@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"math"
 	"time"
 
 	"rent-manager-backend/internal/core/domain"
@@ -57,7 +58,7 @@ func (calculator *RentPaymentCalculator) Calculate(
 		}
 	}
 	adjustmentPercentage := adjustmentSuggestion.Percentage
-	adjustmentAmount := baseAmount * adjustmentPercentage / 100
+	adjustmentAmount := math.Round(baseAmount*adjustmentPercentage) / 100
 
 	interestAmount := calculateInterestAmount(
 		rentalContract,
@@ -66,7 +67,7 @@ func (calculator *RentPaymentCalculator) Calculate(
 		baseAmount+adjustmentAmount,
 	)
 
-	totalAmount := baseAmount + adjustmentAmount + interestAmount
+	totalAmount := math.Round(baseAmount + adjustmentAmount + interestAmount)
 
 	return &domain.RentPaymentCalculation{
 		BaseAmount:           baseAmount,

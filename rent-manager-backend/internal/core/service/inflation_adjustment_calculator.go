@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"math"
 	"time"
 
 	"rent-manager-backend/internal/core/domain"
@@ -110,8 +111,11 @@ func (calculator *IPCInflationAdjustmentCalculator) CalculateSuggestedAdjustment
 		accumulated *= 1 + index.Percentage/100
 	}
 
+	percentage := (accumulated - 1) * 100
+	roundedPercentage := math.Round(percentage*100) / 100
+
 	return &domain.AdjustmentSuggestion{
-		Percentage: (accumulated - 1) * 100,
+		Percentage: roundedPercentage,
 		Status:     domain.AdjustmentStatusCalculated,
 		Message:    "",
 	}, nil
