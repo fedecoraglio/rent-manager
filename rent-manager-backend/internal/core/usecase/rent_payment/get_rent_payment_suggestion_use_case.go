@@ -62,7 +62,13 @@ func (uc *GetRentPaymentSuggestionUseCase) GetRentPaymentSuggestion(
 
 	dueDate := CalculateDueDate(period, rentalContract.DueDay)
 
+	interestCalculationType := ""
+	if rentalContract.InterestCalculationType != nil {
+		interestCalculationType = rentalContract.InterestCalculationType.Code
+	}
+
 	return &domain.RentPaymentSuggestion{
+		InterestCalculationType:       interestCalculationType,
 		RentalContractID:              rentalContract.ID,
 		Period:                        period,
 		DueDate:                       dueDate,

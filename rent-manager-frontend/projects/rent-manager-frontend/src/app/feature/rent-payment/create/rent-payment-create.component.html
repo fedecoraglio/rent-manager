@@ -5,7 +5,18 @@
     </h1>
   </header>
 
-  <rm-rent-payment-form [suggestion]="suggestionSignal()" />
+  <rm-rent-payment-form
+    [suggestion]="suggestionSignal()"
+    [interestCalculationType]="suggestionSignal()?.interest_calculation_type ?? ''"
+    (paymentDateChange)="refreshSuggestion($event)"
+  />
+
+  @if (isRefreshingSignal()) {
+    <p role="status">{{ 'rentPayments.form.updatingSuggestion' | translate }}</p>
+  }
+  @if (suggestionErrorSignal()) {
+    <p role="alert" class="text-red-700">{{ 'rentPayments.form.suggestionError' | translate }}</p>
+  }
 
   @if (suggestionSignal()?.suggested_adjustment_status === 'missing_indexes') {
     <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
@@ -28,7 +39,7 @@
       mat-flat-button
       color="primary"
       type="button"
-      [disabled]="isLoadingSignal()"
+      [disabled]="isLoadingSignal() || isRefreshingSignal() || !suggestionReadySignal()"
       (click)="save()"
     >
       {{ 'common.save' | translate }}

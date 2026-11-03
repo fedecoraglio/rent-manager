@@ -3,6 +3,7 @@ package http
 import "rent-manager-backend/internal/core/domain"
 
 type rentPaymentSuggestionResponse struct {
+	InterestCalculationType       string  `json:"interest_calculation_type"`
 	RentalContractID              int64   `json:"rental_contract_id"`
 	Period                        string  `json:"period"`
 	DueDate                       string  `json:"due_date"`
@@ -18,6 +19,7 @@ func newRentPaymentSuggestionResponse(
 	suggestion *domain.RentPaymentSuggestion,
 ) rentPaymentSuggestionResponse {
 	return rentPaymentSuggestionResponse{
+		InterestCalculationType:       suggestion.InterestCalculationType,
 		RentalContractID:              suggestion.RentalContractID,
 		Period:                        suggestion.Period.Format("2006-01"),
 		DueDate:                       suggestion.DueDate.Format("2006-01-02"),

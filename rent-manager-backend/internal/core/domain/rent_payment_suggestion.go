@@ -3,6 +3,7 @@ package domain
 import "time"
 
 type RentPaymentSuggestion struct {
+	InterestCalculationType       string
 	RentalContractID              int64
 	Period                        time.Time
 	DueDate                       time.Time

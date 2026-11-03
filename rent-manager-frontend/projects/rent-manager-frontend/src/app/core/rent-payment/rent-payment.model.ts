@@ -37,6 +37,7 @@ export interface RentPaymentScheduleItem {
 }
 
 export interface RentPaymentSuggestion {
+  interest_calculation_type: string;
   rental_contract_id: number;
   period: string;
   due_date: string;

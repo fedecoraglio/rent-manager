@@ -1,4 +1,12 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  OnDestroy,
+} from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { filter, ReplaySubject, Subject, takeUntil } from 'rxjs';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -37,6 +45,8 @@ export class RentPaymentFormComponent implements OnDestroy, AfterViewInit {
     [RentPaymentFormField.BaseAmount]: new FormControl(0, [Validators.required, Validators.min(1)]),
     [RentPaymentFormField.SuggestedAdjustmentPercentage]: new FormControl(0),
     [RentPaymentFormField.AppliedAdjustmentPercentage]: new FormControl(0),
+    [RentPaymentFormField.SuggestedInterestAmount]: new FormControl(0),
+    [RentPaymentFormField.AppliedInterestAmount]: new FormControl(0),
     [RentPaymentFormField.TotalAmount]: new FormControl(0, [
       Validators.required,
       Validators.min(1),
@@ -49,6 +59,8 @@ export class RentPaymentFormComponent implements OnDestroy, AfterViewInit {
   readonly suggestion$ = new ReplaySubject<RentPaymentSuggestion | null>(1);
 
   @Input() isReadonly = false;
+  @Input() interestCalculationType: string | null = null;
+  @Output() paymentDateChange = new EventEmitter<string>();
 
   @Input() set rentPayment(rentPayment: RentPayment | null) {
     this.rentPayment$.next(rentPayment);
@@ -85,17 +97,21 @@ export class RentPaymentFormComponent implements OnDestroy, AfterViewInit {
     this.suggestion$
       .pipe(filter(Boolean), takeUntil(this.destroy$))
       .subscribe((suggestion: RentPaymentSuggestion) => {
-        this.formGroup.patchValue({
-          rental_contract_id: suggestion.rental_contract_id,
-          period: suggestion.period,
-          due_date: suggestion.due_date,
-          payment_date: suggestion.payment_date,
-          base_amount: suggestion.base_amount,
-          suggested_adjustment_percentage: suggestion.suggested_adjustment_percentage,
-          applied_adjustment_percentage: suggestion.suggested_adjustment_percentage,
-          total_amount: suggestion.suggested_total_amount,
-          is_paid: true,
-        });
+        this.formGroup.patchValue(
+          {
+            rental_contract_id: suggestion.rental_contract_id,
+            period: suggestion.period,
+            due_date: suggestion.due_date,
+            payment_date: suggestion.payment_date,
+            base_amount: suggestion.base_amount,
+            suggested_adjustment_percentage: suggestion.suggested_adjustment_percentage,
+            applied_adjustment_percentage: suggestion.suggested_adjustment_percentage,
+            suggested_interest_amount: suggestion.suggested_interest_amount,
+            applied_interest_amount: suggestion.suggested_interest_amount,
+            total_amount: suggestion.suggested_total_amount,
+          },
+          { emitEvent: false },
+        );
       });
 
     this.rentPayment$
@@ -109,6 +125,8 @@ export class RentPaymentFormComponent implements OnDestroy, AfterViewInit {
           base_amount: rentPayment.base_amount,
           suggested_adjustment_percentage: rentPayment.suggested_adjustment_percentage,
           applied_adjustment_percentage: rentPayment.applied_adjustment_percentage,
+          suggested_interest_amount: rentPayment.suggested_interest_amount,
+          applied_interest_amount: rentPayment.applied_interest_amount,
           total_amount: rentPayment.total_amount,
           is_paid: rentPayment.is_paid,
           notes: rentPayment.notes,
