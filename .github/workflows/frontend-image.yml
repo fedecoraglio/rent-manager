@@ -1,0 +1,40 @@
+name: Build Frontend Image
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - "rent-manager-frontend/**"
+      - ".github/workflows/frontend-image.yml"
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: fedecoraglio/rent-manager-frontend
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push frontend
+        uses: docker/build-push-action@v6
+        with:
+          context: ./rent-manager-frontend
+          file: ./rent-manager-frontend/Dockerfile
+          push: true
+          tags: ghcr.io/fedecoraglio/rent-manager-frontend:develop
