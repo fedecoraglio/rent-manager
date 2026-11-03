@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: ghcr.io/fedecoraglio/rent-manager-backend:develop
+          image: ghcr.io/fedecoraglio/rent-manager-backend:master
           imagePullPolicy: Always
 
           ports:

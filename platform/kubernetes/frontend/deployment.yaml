@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: ghcr.io/fedecoraglio/rent-manager-frontend:develop
+          image: ghcr.io/fedecoraglio/rent-manager-frontend:master
           imagePullPolicy: Always
 
           ports:

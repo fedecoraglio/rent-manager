@@ -10,7 +10,7 @@ spec:
 
   source:
     repoURL: https://github.com/fedecoraglio/rent-manager.git
-    targetRevision: develop
+    targetRevision: master
     path: platform/kubernetes
 
   destination:

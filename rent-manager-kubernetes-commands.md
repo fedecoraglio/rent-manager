@@ -248,7 +248,7 @@ kubectl port-forward -n rent-manager svc/mysql 3307:3306
 
 Deploy to live
 ```cmd
-git push origin develop
+git push origin master
 kubectl -n argocd annotate application rent-manager argocd.argoproj.io/refresh=normal --overwrite
 kubectl -n argocd get application rent-manager
 kubectl -n rent-manager rollout restart deployment/backend

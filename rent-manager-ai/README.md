@@ -250,7 +250,7 @@ Ollama restored readiness. Model downloads and inference are not part of this bo
 5. **Phases 6–9:** Angular documents, stateless assistant, error cleanup and source citations.
 6. **Phase 10:** evaluate Kubernetes separately after local acceptance.
 
-Frontend inspection on `develop` found standalone Angular 21 Material components, signals,
+Frontend inspection on `master` found standalone Angular 21 Material components, signals,
 Tailwind styling, translations, `core` API/read services and feature write services. Future UI
 belongs under `feature/rent-contract/view` with document/assistant components and service-owned
 HTTP calls. Extend `core/config/AppConfig` and `/assets/config.json` with an independent
