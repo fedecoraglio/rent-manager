@@ -1,8 +1,8 @@
 # Releases y despliegue
 
 Argo CD sigue `develop`, en `platform/kubernetes`, con sincronización automática.
-El workflow **Release Images** se ejecuta al subir un tag `vMAJOR.MINOR.PATCH`
-(por ejemplo, `v1.0.0`) cuyo commit pertenezca al historial de `develop`.
+El workflow **Release Images** se ejecuta al subir un tag `MAJOR.MINOR.PATCH`
+(por ejemplo, `1.0.0`) cuyo commit pertenezca al historial de `develop`.
 Un push normal a `develop` ya no publica imágenes.
 
 ## Publicar una versión
@@ -13,11 +13,11 @@ limpio y actualizado, elegir una versión nueva (no reutilizar ni mover tags):
 ```powershell
 git switch develop
 git pull --ff-only origin develop
-git tag -a v1.0.0 -m "Release v1.0.0"
-git push origin v1.0.0
+git tag -a 1.0.0 -m "Release 1.0.0"
+git push origin 1.0.0
 ```
 
-Reemplazar `v1.0.0` por la versión que corresponda. No es necesario crear además
+Reemplazar `1.0.0` por la versión que corresponda. No es necesario crear además
 una GitHub Release. Publicar una versión por vez y esperar a que termine.
 
 El workflow construye backend y frontend desde el mismo tag y publica ambas
