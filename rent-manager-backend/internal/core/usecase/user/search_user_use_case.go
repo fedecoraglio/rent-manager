@@ -18,7 +18,7 @@ func NewSearchUsersUseCase(
 	}
 }
 
-func (uc *SearchUserUseCase) SearchUsersByNameOrEmail(
+func (uc *SearchUserUseCase) Execute(
 	ctx context.Context,
 	value string,
 	page uint64,

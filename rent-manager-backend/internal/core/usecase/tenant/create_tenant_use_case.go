@@ -24,7 +24,7 @@ func NewCreateTenantUseCase(
 	}
 }
 
-func (uc *CreateTenantUseCase) CreateTenant(
+func (uc *CreateTenantUseCase) Execute(
 	ctx context.Context,
 	tenant *domain.Tenant,
 ) (*domain.Tenant, error) {

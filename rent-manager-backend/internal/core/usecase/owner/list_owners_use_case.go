@@ -18,7 +18,7 @@ func NewListOwnersUseCase(ownerRepository port.OwnerRepository) *ListOwnersUseCa
 	}
 }
 
-func (uc *ListOwnersUseCase) ListOwners(
+func (uc *ListOwnersUseCase) Execute(
 	ctx context.Context,
 	page uint64,
 	limit uint64,

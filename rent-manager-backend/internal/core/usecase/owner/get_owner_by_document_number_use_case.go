@@ -20,7 +20,7 @@ func NewGetOwnerByDocumentNumberUseCase(
 	}
 }
 
-func (uc *GetOwnerByDocumentNumberUseCase) GetOwnerByDocumentNumber(
+func (uc *GetOwnerByDocumentNumberUseCase) Execute(
 	ctx context.Context,
 	documentNumber string,
 ) (*domain.Owner, error) {

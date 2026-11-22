@@ -24,7 +24,7 @@ func NewUpdateTenantUseCase(
 	}
 }
 
-func (uc *UpdateTenantUseCase) UpdateTenant(
+func (uc *UpdateTenantUseCase) Execute(
 	ctx context.Context,
 	tenant *domain.Tenant,
 ) (*domain.Tenant, error) {

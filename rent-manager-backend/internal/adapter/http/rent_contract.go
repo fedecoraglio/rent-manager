@@ -45,7 +45,7 @@ func (h *RentalContractHandler) CreateRentalContract(ctx *gin.Context) {
 		return
 	}
 
-	createdRentalContract, err := h.createRentalContractUseCase.CreateRentalContract(ctx, rentalContract)
+	createdRentalContract, err := h.createRentalContractUseCase.Execute(ctx, rentalContract)
 	if err != nil {
 		slog.Error("[CreateRentalContract] failed to create rental contract", "err", err)
 		handleError(ctx, err)
@@ -75,7 +75,7 @@ func (h *RentalContractHandler) UpdateRentalContract(ctx *gin.Context) {
 		return
 	}
 
-	updatedRentalContract, err := h.updateRentalContractUseCase.UpdateRentalContract(ctx, rentalContract)
+	updatedRentalContract, err := h.updateRentalContractUseCase.Execute(ctx, rentalContract)
 	if err != nil {
 		slog.Error("[UpdateRentalContract] failed to update rental contract", "err", err)
 		handleError(ctx, err)
@@ -92,7 +92,7 @@ func (h *RentalContractHandler) GetRentalContractByID(ctx *gin.Context) {
 		return
 	}
 
-	rentalContract, err := h.getRentalContractByIDUseCase.GetRentalContractByID(ctx, id)
+	rentalContract, err := h.getRentalContractByIDUseCase.Execute(ctx, id)
 	if err != nil {
 		slog.Error("[GetRentalContractByID] failed to get rental contract by id", "err", err)
 		handleError(ctx, err)
@@ -110,7 +110,7 @@ func (h *RentalContractHandler) ListRentalContracts(ctx *gin.Context) {
 		return
 	}
 
-	rentalContracts, err := h.listRentalContractsUseCase.ListRentalContracts(
+	rentalContracts, err := h.listRentalContractsUseCase.Execute(
 		ctx,
 		req.PropertyID,
 		req.Page,

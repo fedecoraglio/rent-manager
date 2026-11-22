@@ -24,7 +24,7 @@ func NewLocationHandler(
 }
 
 func (h *LocationHandler) ListCountries(ctx *gin.Context) {
-	countries, err := h.listCountriesUseCase.ListCountries(ctx)
+	countries, err := h.listCountriesUseCase.Execute(ctx)
 	if err != nil {
 		slog.Error("[ListCountries] failed to list countries", "err", err)
 		handleError(ctx, err)
@@ -42,7 +42,7 @@ func (h *LocationHandler) ListStatesByCountry(ctx *gin.Context) {
 		return
 	}
 
-	states, err := h.listStatesByCountryUseCase.ListStatesByCountry(
+	states, err := h.listStatesByCountryUseCase.Execute(
 		ctx,
 		req.CountryID,
 	)

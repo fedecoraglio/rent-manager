@@ -20,7 +20,7 @@ func NewListRentPaymentsUseCase(
 	}
 }
 
-func (uc *ListRentPaymentsUseCase) ListRentPayments(
+func (uc *ListRentPaymentsUseCase) Execute(
 	ctx context.Context,
 	rentalContractID int64,
 	page uint64,

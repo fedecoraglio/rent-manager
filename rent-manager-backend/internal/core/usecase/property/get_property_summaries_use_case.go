@@ -36,7 +36,7 @@ func (uc *ListPropertiesSummariesUseCase) Execute(
 	items := make([]domain.PropertySummary, 0, len(contracts))
 
 	for _, contract := range contracts {
-		summary, err := uc.getRentalContractSummaryUseCase.GetRentalContractSummary(ctx, contract.ID)
+		summary, err := uc.getRentalContractSummaryUseCase.Execute(ctx, contract.ID)
 		if err != nil {
 			return nil, err
 		}

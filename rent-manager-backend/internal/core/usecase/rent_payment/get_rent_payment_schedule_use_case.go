@@ -27,7 +27,7 @@ func NewGetRentPaymentScheduleUseCase(
 	}
 }
 
-func (uc *GetRentPaymentScheduleUseCase) GetRentPaymentSchedule(
+func (uc *GetRentPaymentScheduleUseCase) Execute(
 	ctx context.Context,
 	rentalContractID int64,
 ) ([]domain.RentPaymentScheduleItem, error) {

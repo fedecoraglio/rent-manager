@@ -10,7 +10,7 @@ MySQL, and Angular remain separate services.
 See [AI Kubernetes deployment](../platform/kubernetes/ai/README.md) for the
 PostgreSQL/pgvector and Ollama StatefulSets, persistent documents/models/data,
 Secret preparation, GHCR image workflow, probes, and smoke checks. The API is
-available under `/ai` through Ingress, or directly through service/ai port 8081.
+available through authenticated backend routes under `/v1/rental-contracts/:id`; service/ai port 8081 is internal only.
 
 ## Versions and scope
 
@@ -303,3 +303,12 @@ fails explicitly without deleting them: back up PostgreSQL and PDFs and resolve
 those duplicates before retrying. Stop old API instances before the migration;
 they expect UUID document IDs. Rolling back the image alone is not supported
 after V3; restore a consistent pre-migration database/files backup if needed.
+
+## Backend gateway
+
+The browser now accesses AI through authenticated Go endpoints under
+`/v1/rental-contracts/:rentalContractId/documents` and `/chat`. The backend derives
+the property ID from MySQL. AI has no public `/ai` Ingress; it remains an internal
+ClusterIP service. See `../platform/kubernetes/ai/README.md` for API envelopes,
+authorization boundaries, timeouts and deployment verification. Direct API paths
+below are intended for internal service calls and administrator smoke checks.

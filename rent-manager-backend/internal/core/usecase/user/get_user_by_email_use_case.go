@@ -18,7 +18,7 @@ func NewGetUserByEmailUseCase(
 	}
 }
 
-func (uc *GetUserByEmailUseCase) GetUserByEmail(ctx context.Context, email string) (*domain.User, error) {
+func (uc *GetUserByEmailUseCase) Execute(ctx context.Context, email string) (*domain.User, error) {
 	user, err := uc.userRepository.GetUserByEmail(ctx, email)
 	if err != nil {
 		return nil, err

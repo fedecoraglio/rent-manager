@@ -20,7 +20,7 @@ func NewListRentAdjustmentTypesUseCase(
 	}
 }
 
-func (uc *ListRentAdjustmentTypesUseCase) ListRentAdjustmentTypes(
+func (uc *ListRentAdjustmentTypesUseCase) Execute(
 	ctx context.Context,
 ) ([]domain.RentAdjustmentType, error) {
 	types, err := uc.contractCatalogRepository.ListRentAdjustmentTypes(ctx)

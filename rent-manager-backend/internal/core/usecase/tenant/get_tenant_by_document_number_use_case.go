@@ -18,7 +18,7 @@ func NewGetTenantByDocumentNumberUseCase(tenantRepository port.TenantRepository)
 	}
 }
 
-func (uc *GetTenantByDocumentNumberUseCase) GetTenantByDocumentNumber(
+func (uc *GetTenantByDocumentNumberUseCase) Execute(
 	ctx context.Context,
 	documentNumber string,
 ) (*domain.Tenant, error) {

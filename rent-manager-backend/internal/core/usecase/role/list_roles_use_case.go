@@ -14,7 +14,7 @@ func NewListRolesUseCase(roleRepository port.RoleRepository) *ListRolesUseCase {
 	return &ListRolesUseCase{roleRepository: roleRepository}
 }
 
-func (lr *ListRolesUseCase) ListRoles(ctx context.Context, page uint64, limit uint64) ([]domain.Role, error) {
+func (lr *ListRolesUseCase) Execute(ctx context.Context, page uint64, limit uint64) ([]domain.Role, error) {
 	roles, err := lr.roleRepository.ListRoles(ctx, page, limit)
 	if err != nil {
 		return nil, err

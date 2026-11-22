@@ -45,7 +45,7 @@ func (h *TenantHandler) CreateTenant(ctx *gin.Context) {
 		return
 	}
 
-	createdTenant, err := h.createTenantUseCase.CreateTenant(ctx, newTenantFromCreateRequest(req))
+	createdTenant, err := h.createTenantUseCase.Execute(ctx, newTenantFromCreateRequest(req))
 	if err != nil {
 		slog.Error("[CreateTenant] failed to create tenant", "err", err)
 		handleError(ctx, err)
@@ -62,7 +62,7 @@ func (h *TenantHandler) GetTenantByID(ctx *gin.Context) {
 		return
 	}
 
-	tenant, err := h.getTenantByIDUseCase.GetTenantByID(ctx, id)
+	tenant, err := h.getTenantByIDUseCase.Execute(ctx, id)
 	if err != nil {
 		slog.Error("[GetTenantByID] failed to get tenant by id", "err", err)
 		handleError(ctx, err)
@@ -80,7 +80,7 @@ func (h *TenantHandler) ListTenants(ctx *gin.Context) {
 		return
 	}
 
-	tenants, err := h.listTenantUseCase.ListTenants(ctx, req.Page, req.Limit)
+	tenants, err := h.listTenantUseCase.Execute(ctx, req.Page, req.Limit)
 	if err != nil {
 		slog.Error("[ListTenants] failed to list tenants", "err", err)
 		handleError(ctx, err)
@@ -98,7 +98,7 @@ func (h *TenantHandler) SearchTenants(ctx *gin.Context) {
 		return
 	}
 
-	tenants, err := h.searchTenantUseCase.SearchTenants(ctx, req.Value, req.Page, req.Limit)
+	tenants, err := h.searchTenantUseCase.Execute(ctx, req.Value, req.Page, req.Limit)
 	if err != nil {
 		slog.Error("[SearchTenants] failed to search tenants", "err", err)
 		handleError(ctx, err)
@@ -122,7 +122,7 @@ func (h *TenantHandler) UpdateTenant(ctx *gin.Context) {
 		return
 	}
 
-	updatedTenant, err := h.updateTenantUseCase.UpdateTenant(ctx, newTenantFromUpdateRequest(id, req))
+	updatedTenant, err := h.updateTenantUseCase.Execute(ctx, newTenantFromUpdateRequest(id, req))
 	if err != nil {
 		slog.Error("[UpdateTenant] failed to update tenant", "err", err)
 		handleError(ctx, err)

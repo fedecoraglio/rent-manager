@@ -27,7 +27,7 @@ func NewGetRentPaymentSuggestionUseCase(
 	}
 }
 
-func (uc *GetRentPaymentSuggestionUseCase) GetRentPaymentSuggestion(
+func (uc *GetRentPaymentSuggestionUseCase) Execute(
 	ctx context.Context,
 	rentalContractID int64,
 	period time.Time,

@@ -24,7 +24,7 @@ func NewUpdatePropertyUseCase(
 	}
 }
 
-func (uc *UpdatePropertyUseCase) UpdateProperty(
+func (uc *UpdatePropertyUseCase) Execute(
 	ctx context.Context,
 	property *domain.Property,
 ) (*domain.Property, error) {

@@ -20,7 +20,7 @@ func NewListPropertyTypesUseCase(
 	}
 }
 
-func (uc *ListPropertyTypesUseCase) ListPropertyTypes(
+func (uc *ListPropertyTypesUseCase) Execute(
 	ctx context.Context,
 ) ([]domain.PropertyType, error) {
 	propertyTypes, err := uc.propertyCatalogRepository.ListPropertyTypes(ctx)

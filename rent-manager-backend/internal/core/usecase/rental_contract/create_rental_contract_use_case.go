@@ -25,7 +25,7 @@ func NewCreateRentalContractUseCase(
 	}
 }
 
-func (uc *CreateRentalContractUseCase) CreateRentalContract(
+func (uc *CreateRentalContractUseCase) Execute(
 	ctx context.Context,
 	rentalContract *domain.RentalContract,
 ) (*domain.RentalContract, error) {

@@ -18,7 +18,7 @@ func NewGetTenantByIDUseCase(tenantRepository port.TenantRepository) *GetTenantB
 	}
 }
 
-func (uc *GetTenantByIDUseCase) GetTenantByID(ctx context.Context, id int64) (*domain.Tenant, error) {
+func (uc *GetTenantByIDUseCase) Execute(ctx context.Context, id int64) (*domain.Tenant, error) {
 	tenant, err := uc.tenantRepository.GetTenantByID(ctx, id)
 	if err != nil {
 		slog.Error("[GetTenantByIDUseCase] repository get by id failed", "err", err)

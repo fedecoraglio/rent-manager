@@ -20,7 +20,7 @@ func NewListStatesByCountryUseCase(
 	}
 }
 
-func (uc *ListStatesByCountryUseCase) ListStatesByCountry(
+func (uc *ListStatesByCountryUseCase) Execute(
 	ctx context.Context,
 	countryID int64,
 ) ([]domain.State, error) {

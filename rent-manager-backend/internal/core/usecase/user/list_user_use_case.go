@@ -18,7 +18,7 @@ func NewListUsersUseCase(
 	}
 }
 
-func (uc *ListUserUseCase) ListUsers(ctx context.Context, page uint64, limit uint64) ([]domain.User, error) {
+func (uc *ListUserUseCase) Execute(ctx context.Context, page uint64, limit uint64) ([]domain.User, error) {
 	users, err := uc.userRepository.ListUsers(ctx, page, limit)
 	if err != nil {
 		return nil, err

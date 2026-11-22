@@ -48,7 +48,7 @@ func (h *PropertyHandler) CreateProperty(ctx *gin.Context) {
 		return
 	}
 
-	createdProperty, err := h.createPropertyUseCase.CreateProperty(
+	createdProperty, err := h.createPropertyUseCase.Execute(
 		ctx,
 		newPropertyFromCreateRequest(req),
 	)
@@ -68,7 +68,7 @@ func (h *PropertyHandler) GetPropertyByID(ctx *gin.Context) {
 		return
 	}
 
-	property, err := h.getPropertyByIDUseCase.GetPropertyByID(ctx, id)
+	property, err := h.getPropertyByIDUseCase.Execute(ctx, id)
 	if err != nil {
 		slog.Error("[GetPropertyByID] failed to get property by id", "err", err)
 		handleError(ctx, err)
@@ -86,7 +86,7 @@ func (h *PropertyHandler) ListProperties(ctx *gin.Context) {
 		return
 	}
 
-	properties, err := h.listPropertiesUseCase.ListProperties(ctx, req.Page, req.Limit)
+	properties, err := h.listPropertiesUseCase.Execute(ctx, req.Page, req.Limit)
 	if err != nil {
 		slog.Error("[ListProperties] failed to list properties", "err", err)
 		handleError(ctx, err)
@@ -122,7 +122,7 @@ func (h *PropertyHandler) SearchProperties(ctx *gin.Context) {
 		return
 	}
 
-	properties, err := h.searchPropertiesUseCase.SearchProperties(ctx, req.Value, req.Page, req.Limit)
+	properties, err := h.searchPropertiesUseCase.Execute(ctx, req.Value, req.Page, req.Limit)
 	if err != nil {
 		slog.Error("[SearchProperties] failed to search properties", "err", err)
 		handleError(ctx, err)
@@ -146,7 +146,7 @@ func (h *PropertyHandler) UpdateProperty(ctx *gin.Context) {
 		return
 	}
 
-	updatedProperty, err := h.updatePropertyUseCase.UpdateProperty(
+	updatedProperty, err := h.updatePropertyUseCase.Execute(
 		ctx,
 		newPropertyFromUpdateRequest(id, req),
 	)

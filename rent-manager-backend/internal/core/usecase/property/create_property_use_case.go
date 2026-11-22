@@ -24,7 +24,7 @@ func NewCreatePropertyUseCase(
 	}
 }
 
-func (uc *CreatePropertyUseCase) CreateProperty(
+func (uc *CreatePropertyUseCase) Execute(
 	ctx context.Context,
 	property *domain.Property,
 ) (*domain.Property, error) {

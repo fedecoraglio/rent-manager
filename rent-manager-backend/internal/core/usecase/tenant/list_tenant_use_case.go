@@ -18,7 +18,7 @@ func NewListTenantsUseCase(tenantRepository port.TenantRepository) *ListTenantUs
 	}
 }
 
-func (uc *ListTenantUseCase) ListTenants(
+func (uc *ListTenantUseCase) Execute(
 	ctx context.Context,
 	page uint64,
 	limit uint64,

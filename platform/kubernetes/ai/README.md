@@ -1,236 +1,128 @@
-# AI on Kubernetes
+# AI through the backend
 
-The root Kustomize application now includes the AI API, PostgreSQL 17 with
-pgvector 0.8.2, and Ollama 0.12.3, in namespace `rent-manager`.
-MySQL, the Go backend, and the Angular frontend remain separate workloads.
-Argo CD picks up these manifests through its existing `platform/kubernetes` path.
+The browser accesses documents and chat through the authenticated Go backend.
+The AI Service remains ClusterIP-only at `http://ai:8081`; there is no AI Ingress.
+The existing nginx Ingress routes `/v1` to backend and `/` to frontend.
 
-## Components and storage
+## HTTP contract
 
-| Workload | Service | Persistent storage | Memory request / limit |
-| --- | --- | --- | --- |
-| StatefulSet postgres | postgres:5432 | postgres-data, 5Gi | 256Mi / 1Gi |
-| StatefulSet ollama | ollama:11434 | ollama-data, 10Gi | 2Gi / 6Gi |
-| Deployment ai | ai:8081 | ai-documents, 5Gi | 512Mi / 1Gi |
+All endpoints below require `Authorization: Bearer <token>`:
 
-PVCs use the cluster's default StorageClass and ReadWriteOnce. Keep one replica
-per workload. The API uses Recreate to avoid overlapping filesystem writers;
-updates briefly interrupt AI requests. The image runs as UID/GID 10001, and
-fsGroup grants access to the document volume. No GPU is required.
+| Method | Path | Result |
+| --- | --- | --- |
+| POST | /v1/rental-contracts/:rentalContractId/documents | Multipart `file` + `type`; 201 with `{data: document}` and backend Location |
+| GET | /v1/rental-contracts/:rentalContractId/documents | 200 with `{data: [...]}` |
+| GET | /v1/rental-contracts/:rentalContractId/documents/:documentId | PDF inline; `?download=true` for attachment |
+| DELETE | /v1/rental-contracts/:rentalContractId/documents/:documentId | 204 |
+| POST | /v1/rental-contracts/:rentalContractId/chat | JSON `{question: "..."}`; 200 with `{data: {answer: "..."}}` |
 
-Allow at least 8Gi of Docker Desktop memory for this local CPU stack, preferably
-more alongside MySQL, the frontend/backend, Argo CD, and other workloads.
-Actual capacity and inference latency depend on the host. Requests determine
-scheduling; memory limits alone do not reserve that capacity. Ensure enough disk
-space for the three claims and container images.
+The use case loads the rental contract from MySQL and derives propertyId from it.
+The caller cannot supply a different propertyId or an arbitrary upstream URL.
+Invalid/missing contracts never reach AI. AI data must use the canonical numeric
+property/contract IDs from MySQL; documents previously uploaded under synthetic
+scopes such as P1/C1 are not automatically migrated to business contracts.
 
-## First deployment
+Access follows the existing application-wide administrative JWT model. Users,
+owners and properties have no ownership/access relationship in the current schema;
+this change does not claim per-user or per-owner authorization. All authenticated
+administrators have the same contract access as existing rental-contract endpoints.
 
-### Validation status (2026-11-13)
+## Architecture
 
-Static review and `kubectl kustomize platform/kubernetes` succeeded. Runtime
-validation remains blocked in the current session: Docker denies access to
-`dockerDesktopLinuxEngine`, and the Kubernetes API at `127.0.0.1:64305` rejects
-socket access. The selected context is `kind-rent-manager`. This session cannot
-request elevated execution. No cluster resources or existing Secrets were changed.
+`adapter/http/DocumentHandler` handles binding, multipart limits and response DTOs.
+`core/usecase/document` defines separate UploadDocument, ListDocuments, DownloadDocument,
+DeleteDocument and AskContractQuestion use cases. Each checks the contract,
+validates inputs and orchestrates the
+`core/port/DocumentGateway`. `adapter/ai/Client` implements that port using a
+bounded HTTP client. `cmd/api/main.go` assembles those dependencies. Core code does
+not depend on Gin or net/http. No Go code writes the AI PostgreSQL registry directly.
 
-The local `postgres/secret.yaml` file is absent and its path is Git-ignored.
-The cluster Secret's existence is **unknown**, not confirmed missing. Argo CD
-ownership, image availability, PVC binding, model downloads, readiness, and
-document/chat behavior also remain unverified.
+`core/policy/document/DocumentUploadPolicy.Execute` owns upload size, required
+content and allowed document types. `ContractQuestionPolicy.Execute` normalizes
+and validates questions. Shared policy helpers validate document/contract IDs.
+Policies are injected through constructors from the composition root, matching
+other backend write policies. Contract lookup and property scope resolution remain
+use-case orchestration. Multipart parsing, MIME headers and HTTP body limits remain
+in the HTTP adapter; PDF parsing and text extraction remain in the AI service.
 
-`.ai-deploy-check` contains previous rendered manifests, JSON snapshots, an
-Ollama bootstrap shell snippet, and a temporary Go YAML parser/cache. These are
-validation artifacts, not deployment inputs; the parser's go.mod contains a
-machine-specific module replacement. Do not apply this directory or treat its
-snapshots as current cluster state. Its rendered.yaml was refreshed in this review.
+The backend reconstructs multipart while preserving PDF bytes. Maximum file size
+is 20 MiB, total multipart body 21 MiB. File headers are encoded safely; the AI
+service still validates PDF contents, encryption, filename and readable text.
+Requests and downloads are bounded. Request cancellation propagates to AI; there
+are no automatic retries of uploads, deletes or chat. Do not assume cancellation
+proves an upstream write was rolled back; inspect the document list before retrying.
 
-Before any apply, inspect live Applications and resource tracking metadata:
+AI status codes are mapped to backend `{code,message}` errors without forwarding
+upstream stack traces or URLs. Supported mappings include 400/404/409/413/415/422,
+503 for dependency/protocol failures, and 504 for timeouts. User Authorization and
+Cookie headers are never forwarded. Redirects are rejected.
 
-```powershell
-kubectl --context kind-rent-manager get applications.argoproj.io -A
-kubectl --context kind-rent-manager -n argocd get application rent-manager -o yaml
-kubectl --context kind-rent-manager -n rent-manager get deployment,statefulset,pvc -o yaml
-kubectl --context kind-rent-manager -n rent-manager get secret postgres-secret -o name
-```
+## Configuration
 
-Only an explicit Secret `NotFound` establishes that it is missing. Authentication,
-authorization, and transport failures must stop Secret preparation. Use `create`
-for a new Secret rather than applying over an existing one. Generate a random
-password locally without printing it; never commit the real secret file. If
-PostgreSQL data already exists, recover its matching credentials instead of
-generating a replacement.
+- `AI_BASE_URL`: local default `http://localhost:8081`; Kubernetes `http://ai:8081`.
+- `AI_TIMEOUT_SECONDS`: 450 by default, allowed range 1..3600.
+- nginx body limit: 21m; read/send timeouts: 480 seconds.
 
-### Local image without publication
+The backend starts even when AI is unavailable; existing Go features continue to
+work. Invalid URL/timeout configuration fails startup. Recreate backend pods after
+ConfigMap changes because their environment is read only at pod creation.
 
-After Docker/cluster access is restored, a local build avoids publishing:
+## Kubernetes rollout
 
-```powershell
-docker build -t rent-manager-ai:local-validation ./rent-manager-ai
-if ($LASTEXITCODE -ne 0) { throw 'AI image build failed' }
-kind load docker-image rent-manager-ai:local-validation --name rent-manager
-if ($LASTEXITCODE -ne 0) { throw 'Loading the image into kind failed' }
-```
+Build/publish the updated backend image before syncing the platform changes.
+Never commit Secrets or database backups. Argo CD sync removes the previously
+managed `rent-manager-ai` Ingress through prune. With manual apply, removing a
+manifest from Kustomize does not remove the old live resource: inspect it and
+explicitly remove only that Ingress after the backend routes are available.
+Do not delete PVCs or change stored database credentials.
 
-Use that image with `imagePullPolicy: IfNotPresent` in a temporary local
-Kustomize patch; keep the tracked GHCR image/policy unchanged. Inspect the
-rendered result before applying. If Argo CD manages these resources, first record
-and temporarily disable automated reconciliation, wait for any active sync to
-finish, and verify no parent Application restores it. Preserve the original sync
-policy for restoration. Restoring GitOps before the tested revision/image is
-available in Git/GHCR can revert the local image or prune locally added resources.
-Do not resume prune until the desired manifests retain all three PVCs.
+The `ai-from-backend` NetworkPolicy selects `app: ai` and admits TCP/8081 only
+from `app: backend` pods in the same namespace. Node-originated health probes are
+handled by Kubernetes network-policy semantics. Policy enforcement requires a
+supporting CNI and must be tested: merely creating a policy does not prove it works.
+The inspected kind cluster uses `kindest/kindnetd`; inter-pod enforcement has not
+been verified in this change. No CNI or cluster recreation is performed here.
+NetworkPolicies are additive: inspect any other policies selecting AI before
+claiming backend-only isolation. Users with pod creation/exec/port-forward RBAC
+or node access are outside this application-level boundary.
 
-1. Ensure Docker Desktop, `kind-rent-manager`, a default StorageClass, and the
-   nginx ingress controller are available.
-2. Build/publish the AI image **before** syncing the new manifests. The new
-   `.github/workflows/ai-image.yml` runs on matching pushes to master and supports
-   manual execution. It runs the Dockerfile's `mvn verify` and publishes both
-   `:master` and a commit SHA tag to GHCR. Make the package readable by the cluster,
-   or configure imagePullSecrets if it is private.
-3. Prepare the PostgreSQL Secret below before Argo CD sync. It is deliberately
-   excluded from Kustomize, as with existing database/backend secrets.
-
-Run from the repository root:
+After sync:
 
 ```powershell
-kubectl config use-context kind-rent-manager
-kubectl get nodes
-kubectl get storageclass
-kubectl apply -f platform/kubernetes/namespace.yaml
-Copy-Item platform/kubernetes/postgres/secret.example.yaml platform/kubernetes/postgres/secret.yaml
-# Edit the ignored secret.yaml and replace CHANGE_ME with a private password.
-# Do not overwrite an existing secret.yaml or rotate a running database this way.
-kubectl apply -f platform/kubernetes/postgres/secret.yaml
-kubectl kustomize platform/kubernetes
+kubectl -n rent-manager rollout restart deployment/backend
+kubectl -n rent-manager rollout status deployment/backend --timeout=300s
+kubectl -n rent-manager get ingress,networkpolicy,pods,pvc
 ```
 
-For a manually managed installation, apply the rendered application with
-`kubectl apply -k platform/kubernetes`. If Argo CD manages the application, sync
-the Git revision instead; avoid competing manual and GitOps changes.
-Existing `mysql-secret` and `backend-secret` must still be present.
-If automated Argo CD sync observes the first push before CI has published the
-image, AI can temporarily show ImagePullBackOff. Verify CI/package availability;
-image pulls retry once publication is complete. Missing database secrets must
-still be prepared explicitly.
+Verify an unauthenticated request to a document/chat endpoint receives 401, a
+valid token and existing contract can upload/list/download/delete and chat, and
+unknown contracts return 404. Confirm `/ai` no longer routes to AI (the frontend
+SPA may return HTML there, so HTTP 200 alone does not mean AI is exposed).
+Check that AI is reachable from the backend and blocked from unrelated pods.
+Keep readiness/health operational checks internal; no public AI health route is added.
+
+For API development, forwarding backend locally is sufficient. The browser never
+needs a direct connection or port-forward to AI:
 
 ```powershell
-kubectl -n argocd annotate application rent-manager argocd.argoproj.io/refresh=normal --overwrite
-kubectl -n argocd get application rent-manager
-kubectl -n rent-manager get pvc,pods,svc,ingress
-kubectl -n rent-manager rollout status statefulset/postgres --timeout=300s
-kubectl -n rent-manager logs ollama-0 -c pull-models -f
-kubectl -n rent-manager rollout status statefulset/ollama --timeout=1800s
-kubectl -n rent-manager rollout status deployment/ai --timeout=1800s
+kubectl -n rent-manager port-forward service/backend 8082:8080
+# Set $env:RENT_MANAGER_TOKEN privately before these calls.
+curl.exe -H "Authorization: Bearer $env:RENT_MANAGER_TOKEN" http://localhost:8082/v1/rental-contracts/123/documents
+curl.exe -H "Authorization: Bearer $env:RENT_MANAGER_TOKEN" -F "type=RENT_CONTRACT" -F "file=@contract.pdf;type=application/pdf" http://localhost:8082/v1/rental-contracts/123/documents
 ```
 
-The first Ollama init container starts a temporary local server and downloads
-`nomic-embed-text` and `qwen2.5:3b-instruct` into its PVC. Downloads need outbound
-internet and can take several minutes. Cached models are checked and reused on
-subsequent starts. Failures retry through init-container restart behavior; inspect
-`pull-models` logs for network or disk problems. No inference runs in probes.
+The existing AI smoke-documents script calls the internal AI API directly with
+synthetic scopes and expects unwrapped responses. It is an administrator-only AI
+test; it cannot be pointed at the backend without adapting authentication, real
+contract IDs, routes and response envelopes.
 
-The AI init containers wait for authenticated PostgreSQL access and both models.
-Flyway then applies V1/V2, including `CREATE EXTENSION IF NOT EXISTS vector` and
-the registry/vector tables. The PostgreSQL image already contains the extension
-binaries; pgvector is an extension, not a separate server. The initialized
-POSTGRES_USER has administrative privileges, matching the local Compose setup;
-separating migration and runtime users is outside this local deployment change.
+## AI persistence and bootstrap
 
-The AI startup/liveness probes use the process-only endpoint; readiness includes
-database, pgvector, and Ollama. A dependency outage removes the API from ready
-Service endpoints without making liveness depend on that dependency.
-
-## Access and smoke checks
-
-Through the existing ingress-controller port-forward:
-
-```powershell
-kubectl -n ingress-nginx port-forward service/ingress-nginx-controller 8085:80
-```
-
-The separate AI Ingress strips `/ai` before forwarding, while `/v1` continues to
-reach Go and `/` reaches Angular. It allows 21MiB request bodies for multipart
-PDF uploads and 330-second proxy read/send timeouts for indexing/chat.
-
-```powershell
-curl.exe http://localhost:8085/ai/actuator/health/readiness
-./rent-manager-ai/scripts/smoke-documents.ps1 -BaseUrl http://localhost:8085/ai
-```
-
-The smoke script creates temporary scoped PDFs and deletes them. Its
-RestartService/CheckIndexing/CheckEmbeddingFailure switches target Compose,
-so do not use those switches for Kubernetes.
-The default script does not test chat or directly inspect vector rows. Test chat
-separately while a test document still exists, confirm a grounded response with
-citations, then verify another contract cannot retrieve its content. Do not use
-a successful document smoke run as evidence that chat was validated.
-
-Alternatively, use direct local access (no `/ai` prefix):
-
-```powershell
-kubectl -n rent-manager port-forward service/ai 8081:8081
-curl.exe http://localhost:8081/actuator/health/readiness
-```
-
-Document/chat paths are otherwise unchanged, for example
-`/ai/properties/P1/contracts/C1/documents` through Ingress. The API's Location
-header remains an application-relative path without `/ai`; clients using the
-prefix must resolve it against the configured AI base URL. This change deploys
-the API; it does not add Angular integration or Go authentication to AI. The AI
-API currently has no authentication; keep this ingress local to the development
-environment unless access control is added.
-
-## Updates and configuration
-
-`ai-config` defines server, storage, dependency URLs, JVM sizing, and effective
-timeout variable names. `postgres-config` supplies the shared database name,
-and `postgres-secret` supplies the same credentials to PostgreSQL and AI.
-`ollama-config` defines model names and limits inference to one loaded model
-and one parallel request to reduce local memory pressure.
-
-Keep model names aligned with `AiConfiguration.java`, whose explicit chat bean
-currently uses `qwen2.5:3b-instruct` rather than the YAML's `qwen3:4b`.
-Changing an embedding model/dimension requires a reindexing plan.
-
-After CI finishes publishing a replacement `:master` image:
-
-```powershell
-kubectl -n rent-manager rollout restart deployment/ai
-kubectl -n rent-manager rollout status deployment/ai --timeout=1800s
-```
-
-An unchanged mutable tag does not trigger rollout automatically. For reproducible
-releases/rollback, change the manifest to the published commit SHA tag and let
-Argo CD reconcile it. Restart affected workloads after ConfigMap/Secret changes;
-environment variables are read when pods are created. Changing initialized
-PostgreSQL credentials in a Secret does not change the stored database password.
-
-## Troubleshooting and data
-
-```powershell
-kubectl -n rent-manager describe pod ai-<pod-suffix>
-kubectl -n rent-manager logs deployment/ai -c wait-for-postgres
-kubectl -n rent-manager logs deployment/ai -c wait-for-models
-kubectl -n rent-manager logs deployment/ai -c ai
-kubectl -n rent-manager logs ollama-0 -c pull-models
-kubectl -n rent-manager exec ollama-0 -c ollama -- ollama list
-kubectl -n rent-manager logs postgres-0
-kubectl -n rent-manager get events --sort-by=.metadata.creationTimestamp
-```
-
-Missing Secret: CreateContainerConfigError. Missing registry image/access:
-ImagePullBackOff. Unbound PVC or insufficient CPU/memory: Pending. Model pull
-failure: Init:CrashLoopBackOff. Inspect startup logs and Flyway errors if the API
-restarts after its init containers complete. The init loops intentionally keep
-waiting for dependencies; deployment progress timeout does not repair them.
-
-This creates new Kubernetes volumes; it does not copy existing Compose volumes,
-host PDFs, PostgreSQL rows, or model caches. Back up and restore PostgreSQL plus
-document files consistently if existing data must be migrated; do not copy only
-vectors or only PDFs. Keep both stacks stopped from writing during the final
-migration. Downloading cached models again is safe but may be slow.
-
-Do not delete PVCs, reset databases, or run `compose down -v` as a rollout fix.
-Argo CD prune can delete resources removed from Git; preserve PVC manifests and
-backups. Image rollback does not roll back schema or data changes.
+PostgreSQL 17/pgvector stores registry and vectors on postgres-data (5Gi). Ollama
+bootstraps nomic-embed-text and qwen2.5:3b-instruct on ollama-data (10Gi). Original
+PDFs live on ai-documents (5Gi), mounted at /app/storage. AI waits for PostgreSQL
+credentials and both models. Flyway applies pending migrations at startup.
+Keep postgres-secret local/ignored and create it only if explicitly missing; do
+not overwrite a live Secret or rotate initialized database credentials this way.
+Allow at least 8Gi Docker Desktop memory, preferably more for the full stack.
+Backup PostgreSQL and original PDFs together. Compose volumes are not imported.

@@ -18,7 +18,7 @@ func NewGetOwnerByIDUseCase(ownerRepository port.OwnerRepository) *GetOwnerByIDU
 	}
 }
 
-func (uc *GetOwnerByIDUseCase) GetOwnerByID(ctx context.Context, id int64) (*domain.Owner, error) {
+func (uc *GetOwnerByIDUseCase) Execute(ctx context.Context, id int64) (*domain.Owner, error) {
 	owner, err := uc.ownerRepository.GetOwnerByID(ctx, id)
 	if err != nil {
 		slog.Error("[GetOwnerByIDUseCase] repository get by id failed", "err", err)

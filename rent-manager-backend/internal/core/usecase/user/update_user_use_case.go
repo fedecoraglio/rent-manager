@@ -16,7 +16,7 @@ func NewUpdateUserUseCase(userRepository port.UserRepository, policy *userPolicy
 	return &UpdateUserUseCase{userRepository: userRepository, userUpdatePolicy: policy}
 }
 
-func (uc *UpdateUserUseCase) UpdateUser(ctx context.Context, user *domain.User) (*domain.User, error) {
+func (uc *UpdateUserUseCase) Execute(ctx context.Context, user *domain.User) (*domain.User, error) {
 	err := uc.userUpdatePolicy.Execute(ctx, user)
 	if err != nil {
 		return nil, err

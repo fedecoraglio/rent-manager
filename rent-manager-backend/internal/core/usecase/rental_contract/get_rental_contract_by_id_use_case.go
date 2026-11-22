@@ -20,7 +20,7 @@ func NewGetRentalContractByIDUseCase(
 	}
 }
 
-func (uc *GetRentalContractByIDUseCase) GetRentalContractByID(
+func (uc *GetRentalContractByIDUseCase) Execute(
 	ctx context.Context,
 	id int64,
 ) (*domain.RentalContract, error) {

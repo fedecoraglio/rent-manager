@@ -18,7 +18,7 @@ func NewSearchTenantsUseCase(tenantRepository port.TenantRepository) *SearchTena
 	}
 }
 
-func (uc *SearchTenantsUseCase) SearchTenants(
+func (uc *SearchTenantsUseCase) Execute(
 	ctx context.Context,
 	value string,
 	page uint64,

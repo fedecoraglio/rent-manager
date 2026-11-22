@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"rent-manager-backend/internal/adapter/ai"
 	"rent-manager-backend/internal/adapter/config"
 	"rent-manager-backend/internal/adapter/http"
 	"rent-manager-backend/internal/adapter/security"
 	"rent-manager-backend/internal/adapter/store/mysql"
 	"rent-manager-backend/internal/adapter/store/mysql/repository"
+	documentPolicy "rent-manager-backend/internal/core/policy/document"
 	inflationIndexPolicy "rent-manager-backend/internal/core/policy/inflation_index"
 	ownerPolicy "rent-manager-backend/internal/core/policy/owner"
 	propertyPolicy "rent-manager-backend/internal/core/policy/property"
@@ -19,6 +21,7 @@ import (
 	userPolicy "rent-manager-backend/internal/core/policy/user"
 	"rent-manager-backend/internal/core/service"
 	contractCatalogUseCase "rent-manager-backend/internal/core/usecase/contract_catalog"
+	documentUseCase "rent-manager-backend/internal/core/usecase/document"
 	inflationIndexUseCase "rent-manager-backend/internal/core/usecase/inflation_index"
 	locationUseCase "rent-manager-backend/internal/core/usecase/location"
 	ownerUseCase "rent-manager-backend/internal/core/usecase/owner"
@@ -273,6 +276,23 @@ func main() {
 	)
 
 	// Init router
+	aiClient, err := ai.NewClient(configApp.AI.BaseURL, configApp.AI.Timeout)
+	if err != nil {
+		slog.Error("Invalid AI service configuration", "error", err)
+		os.Exit(1)
+	}
+	uploadDocumentUseCase := documentUseCase.NewUploadDocumentUseCase(rentalContractRepository, aiClient, documentPolicy.NewDocumentUploadPolicy())
+	listDocumentsUseCase := documentUseCase.NewListDocumentsUseCase(rentalContractRepository, aiClient)
+	downloadDocumentUseCase := documentUseCase.NewDownloadDocumentUseCase(rentalContractRepository, aiClient)
+	deleteDocumentUseCase := documentUseCase.NewDeleteDocumentUseCase(rentalContractRepository, aiClient)
+	askContractQuestionUseCase := documentUseCase.NewAskContractQuestionUseCase(rentalContractRepository, aiClient, documentPolicy.NewContractQuestionPolicy())
+	documentHandler := http.NewDocumentHandler(
+		uploadDocumentUseCase,
+		listDocumentsUseCase,
+		downloadDocumentUseCase,
+		deleteDocumentUseCase,
+		askContractQuestionUseCase,
+	)
 	router, err := http.NewRouter(
 		configApp.HTTP,
 		userHandler,
@@ -287,6 +307,7 @@ func main() {
 		contractCatalogHandler,
 		rentPaymentHandler,
 		inflationIndexHandler,
+		documentHandler,
 		tokenProvider,
 	)
 	if err != nil {

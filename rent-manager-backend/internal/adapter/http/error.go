@@ -40,6 +40,16 @@ func handleError(ctx *gin.Context, err error) {
 
 func statusFromErrorCode(code domain.ErrorCode) int {
 	switch code {
+	case domain.ErrCodeAIUnavailable:
+		return http.StatusServiceUnavailable
+	case domain.ErrCodeAITimeout:
+		return http.StatusGatewayTimeout
+	case domain.ErrCodeDocumentTooLarge:
+		return http.StatusRequestEntityTooLarge
+	case domain.ErrCodeDocumentUnsupported:
+		return http.StatusUnsupportedMediaType
+	case domain.ErrCodeDocumentUnprocessable:
+		return http.StatusUnprocessableEntity
 	case domain.ErrCodeDataNotFound, domain.ErrCodeUserNotFound, domain.ErrCodePropertyNotFound:
 		return http.StatusNotFound
 	case domain.ErrCodeConflictingData, domain.ErrCodeUserAlreadyExists, domain.ErrCodePropertyAlreadyExists:

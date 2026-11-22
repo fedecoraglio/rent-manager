@@ -25,7 +25,7 @@ func NewLoginUseCase(
 	}
 }
 
-func (uc *LoginUseCase) Login(ctx context.Context, login *domain.Login) (string, error) {
+func (uc *LoginUseCase) Execute(ctx context.Context, login *domain.Login) (string, error) {
 	if login == nil {
 		return "", domain.ErrUnauthorized
 	}

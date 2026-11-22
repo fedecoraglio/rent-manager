@@ -18,7 +18,7 @@ func NewSearchPropertiesUseCase(propertyRepository port.PropertyRepository) *Sea
 	}
 }
 
-func (uc *SearchPropertiesUseCase) SearchProperties(
+func (uc *SearchPropertiesUseCase) Execute(
 	ctx context.Context,
 	value string,
 	page uint64,

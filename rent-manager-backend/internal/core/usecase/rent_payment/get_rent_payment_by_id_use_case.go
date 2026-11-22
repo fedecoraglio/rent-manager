@@ -20,7 +20,7 @@ func NewGetRentPaymentByIDUseCase(
 	}
 }
 
-func (uc *GetRentPaymentByIDUseCase) GetRentPaymentByID(
+func (uc *GetRentPaymentByIDUseCase) Execute(
 	ctx context.Context,
 	id int64,
 ) (*domain.RentPayment, error) {

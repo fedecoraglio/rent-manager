@@ -18,7 +18,7 @@ func NewGetUserByIDUseCase(
 	}
 }
 
-func (uc *GetUserByIDUseCase) GetUserByID(ctx context.Context, id int64) (*domain.User, error) {
+func (uc *GetUserByIDUseCase) Execute(ctx context.Context, id int64) (*domain.User, error) {
 	user, err := uc.userRepository.GetUserByID(ctx, id)
 	if err != nil {
 		return nil, err

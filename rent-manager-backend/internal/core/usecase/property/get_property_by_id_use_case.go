@@ -18,7 +18,7 @@ func NewGetPropertyByIDUseCase(propertyRepository port.PropertyRepository) *GetP
 	}
 }
 
-func (uc *GetPropertyByIDUseCase) GetPropertyByID(ctx context.Context, id int64) (*domain.Property, error) {
+func (uc *GetPropertyByIDUseCase) Execute(ctx context.Context, id int64) (*domain.Property, error) {
 	property, err := uc.propertyRepository.GetPropertyByID(ctx, id)
 	if err != nil {
 		slog.Error("[GetPropertyByIDUseCase] repository get by id failed", "err", err)

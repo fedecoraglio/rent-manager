@@ -31,4 +31,4 @@ resources:
   - ai/pvc.yaml
   - ai/deployment.yaml
   - ai/service.yaml
-  - ai/ingress.yaml
+  - ai/networkpolicy.yaml

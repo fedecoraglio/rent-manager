@@ -18,7 +18,7 @@ func NewListPropertiesUseCase(propertyRepository port.PropertyRepository) *ListP
 	}
 }
 
-func (uc *ListPropertiesUseCase) ListProperties(
+func (uc *ListPropertiesUseCase) Execute(
 	ctx context.Context,
 	page uint64,
 	limit uint64,

@@ -20,7 +20,7 @@ func NewListRentalContractsUseCase(
 	}
 }
 
-func (uc *ListRentalContractsUseCase) ListRentalContracts(
+func (uc *ListRentalContractsUseCase) Execute(
 	ctx context.Context,
 	propertyID int64,
 	page uint64,

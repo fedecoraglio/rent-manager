@@ -18,7 +18,7 @@ func NewSearchOwnersUseCase(ownerRepository port.OwnerRepository) *SearchOwnersU
 	}
 }
 
-func (uc *SearchOwnersUseCase) SearchOwners(
+func (uc *SearchOwnersUseCase) Execute(
 	ctx context.Context,
 	value string,
 	page uint64,

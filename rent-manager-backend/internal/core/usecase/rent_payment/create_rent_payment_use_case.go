@@ -24,7 +24,7 @@ func NewCreateRentPaymentUseCase(
 	}
 }
 
-func (uc *CreateRentPaymentUseCase) CreateRentPayment(
+func (uc *CreateRentPaymentUseCase) Execute(
 	ctx context.Context,
 	rentPayment *domain.RentPayment,
 ) (*domain.RentPayment, error) {

@@ -20,7 +20,7 @@ func NewListContractStatusesUseCase(
 	}
 }
 
-func (uc *ListContractStatusesUseCase) ListContractStatuses(
+func (uc *ListContractStatusesUseCase) Execute(
 	ctx context.Context,
 ) ([]domain.ContractStatus, error) {
 	statuses, err := uc.contractCatalogRepository.ListContractStatuses(ctx)

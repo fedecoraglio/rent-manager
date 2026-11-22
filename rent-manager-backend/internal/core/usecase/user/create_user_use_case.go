@@ -25,7 +25,7 @@ func NewCreateUserUseCase(
 	}
 }
 
-func (uc *CreateUserUseCase) CreateUser(ctx context.Context, user *domain.User) (*domain.User, error) {
+func (uc *CreateUserUseCase) Execute(ctx context.Context, user *domain.User) (*domain.User, error) {
 	if err := uc.userCreatePolicy.Execute(ctx, user); err != nil {
 		return nil, err
 	}

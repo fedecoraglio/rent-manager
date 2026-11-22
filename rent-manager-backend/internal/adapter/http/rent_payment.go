@@ -47,7 +47,7 @@ func (h *RentPaymentHandler) GetRentPaymentSchedule(ctx *gin.Context) {
 		return
 	}
 
-	schedule, err := h.getRentPaymentScheduleUseCase.GetRentPaymentSchedule(ctx, rentalContractID)
+	schedule, err := h.getRentPaymentScheduleUseCase.Execute(ctx, rentalContractID)
 	if err != nil {
 		slog.Error("[GetRentPaymentSchedule] failed to get rent payment schedule", "err", err)
 		handleError(ctx, err)
@@ -71,7 +71,7 @@ func (h *RentPaymentHandler) CreateRentPayment(ctx *gin.Context) {
 		return
 	}
 
-	createdRentPayment, err := h.createRentPaymentUseCase.CreateRentPayment(ctx, rentPayment)
+	createdRentPayment, err := h.createRentPaymentUseCase.Execute(ctx, rentPayment)
 	if err != nil {
 		slog.Error("[CreateRentPayment] failed to create rent payment", "err", err)
 		handleError(ctx, err)
@@ -101,7 +101,7 @@ func (h *RentPaymentHandler) UpdateRentPayment(ctx *gin.Context) {
 		return
 	}
 
-	updatedRentPayment, err := h.updateRentPaymentUseCase.UpdateRentPayment(ctx, rentPayment)
+	updatedRentPayment, err := h.updateRentPaymentUseCase.Execute(ctx, rentPayment)
 	if err != nil {
 		slog.Error("[UpdateRentPayment] failed to update rent payment", "err", err)
 		handleError(ctx, err)
@@ -118,7 +118,7 @@ func (h *RentPaymentHandler) GetRentPaymentByID(ctx *gin.Context) {
 		return
 	}
 
-	rentPayment, err := h.getRentPaymentByIDUseCase.GetRentPaymentByID(ctx, id)
+	rentPayment, err := h.getRentPaymentByIDUseCase.Execute(ctx, id)
 	if err != nil {
 		slog.Error("[GetRentPaymentByID] failed to get rent payment by id", "err", err)
 		handleError(ctx, err)
@@ -136,7 +136,7 @@ func (h *RentPaymentHandler) ListRentPayments(ctx *gin.Context) {
 		return
 	}
 
-	rentPayments, err := h.listRentPaymentsUseCase.ListRentPayments(
+	rentPayments, err := h.listRentPaymentsUseCase.Execute(
 		ctx,
 		req.RentalContractID,
 		req.Page,
@@ -177,7 +177,7 @@ func (h *RentPaymentHandler) GetRentPaymentSuggestion(ctx *gin.Context) {
 		return
 	}
 
-	suggestion, err := h.getRentPaymentSuggestionUseCase.GetRentPaymentSuggestion(
+	suggestion, err := h.getRentPaymentSuggestionUseCase.Execute(
 		ctx,
 		rentalContractID,
 		period,
@@ -199,7 +199,7 @@ func (h *RentPaymentHandler) GetRentalContractSummary(ctx *gin.Context) {
 		return
 	}
 
-	summary, err := h.getRentalContractSummaryUseCase.GetRentalContractSummary(
+	summary, err := h.getRentalContractSummaryUseCase.Execute(
 		ctx,
 		rentalContractID,
 	)

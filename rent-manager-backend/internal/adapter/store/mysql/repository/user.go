@@ -37,13 +37,13 @@ func (ur *UserRepository) CreateUser(ctx context.Context, user *domain.User) (*d
 
 	sqlQuery, args, err := query.ToSql()
 	if err != nil {
-		slog.Error("[CreateUser] ToSql error:", err)
+		slog.Error("[CreateUser] ToSql error:", "error", err)
 		return nil, err
 	}
 
 	result, errExe := ur.db.ExecContext(ctx, sqlQuery, args...)
 	if errExe != nil {
-		slog.Error("[CreateUser] Exec err:", errExe)
+		slog.Error("[CreateUser] Exec err:", "error", errExe)
 		if errCode := ur.db.ErrorCode(errExe); errCode == "1062" {
 			return nil, domain.ErrConflictingData
 		}
@@ -52,7 +52,7 @@ func (ur *UserRepository) CreateUser(ctx context.Context, user *domain.User) (*d
 
 	lastID, errLastInsert := result.LastInsertId()
 	if errLastInsert != nil {
-		slog.Error("[CreateUser] LastInsertId err:", errLastInsert)
+		slog.Error("[CreateUser] LastInsertId err:", "error", errLastInsert)
 		return nil, errLastInsert
 	}
 
@@ -68,7 +68,7 @@ func (ur *UserRepository) GetUserByID(ctx context.Context, id int64) (*domain.Us
 
 	sqlQuery, args, err := query.ToSql()
 	if err != nil {
-		slog.Error("[GetUserByID] Error while building sql query", err)
+		slog.Error("[GetUserByID] Error while building sql query", "error", err)
 		return nil, err
 	}
 
@@ -82,7 +82,7 @@ func (ur *UserRepository) GetUserByID(ctx context.Context, id int64) (*domain.Us
 		&user.UpdatedAt,
 	)
 	if err != nil {
-		slog.Error("[GetUserByID] Error:", err, "id:", id)
+		slog.Error("[GetUserByID] Error:", "error", err, "id", id)
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, domain.ErrDataNotFound
 		}
@@ -101,7 +101,7 @@ func (ur *UserRepository) GetUserByEmail(ctx context.Context, email string) (*do
 
 	sqlQuery, args, errSql := query.ToSql()
 	if errSql != nil {
-		slog.Error("[GetUserByEmail] errSql", errSql)
+		slog.Error("[GetUserByEmail] errSql", "error", errSql)
 		return nil, errSql
 	}
 
@@ -115,7 +115,7 @@ func (ur *UserRepository) GetUserByEmail(ctx context.Context, email string) (*do
 		&user.UpdatedAt,
 	)
 	if errQuery != nil {
-		slog.Error("[GetUserByEmail] Error:", errQuery)
+		slog.Error("[GetUserByEmail] Error:", "error", errQuery)
 		if errors.Is(errQuery, sql.ErrNoRows) {
 			return nil, domain.ErrDataNotFound
 		}

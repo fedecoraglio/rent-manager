@@ -45,7 +45,7 @@ func (h *OwnerHandler) CreateOwner(ctx *gin.Context) {
 		return
 	}
 
-	createdOwner, err := h.createOwnerUseCase.CreateOwner(
+	createdOwner, err := h.createOwnerUseCase.Execute(
 		ctx,
 		newOwnerFromCreateRequest(req),
 	)
@@ -65,7 +65,7 @@ func (h *OwnerHandler) GetOwnerByID(ctx *gin.Context) {
 		return
 	}
 
-	owner, err := h.getOwnerByIDUseCase.GetOwnerByID(ctx, id)
+	owner, err := h.getOwnerByIDUseCase.Execute(ctx, id)
 	if err != nil {
 		slog.Error("[GetOwnerByID] failed to get owner by id", "err", err)
 		handleError(ctx, err)
@@ -83,7 +83,7 @@ func (h *OwnerHandler) ListOwners(ctx *gin.Context) {
 		return
 	}
 
-	owners, err := h.listOwnersUseCase.ListOwners(ctx, req.Page, req.Limit)
+	owners, err := h.listOwnersUseCase.Execute(ctx, req.Page, req.Limit)
 	if err != nil {
 		slog.Error("[ListOwners] failed to list owners", "err", err)
 		handleError(ctx, err)
@@ -101,7 +101,7 @@ func (h *OwnerHandler) SearchOwners(ctx *gin.Context) {
 		return
 	}
 
-	owners, err := h.searchOwnersUseCase.SearchOwners(ctx, req.Value, req.Page, req.Limit)
+	owners, err := h.searchOwnersUseCase.Execute(ctx, req.Value, req.Page, req.Limit)
 	if err != nil {
 		slog.Error("[SearchOwners] failed to search owners", "err", err)
 		handleError(ctx, err)
@@ -125,7 +125,7 @@ func (h *OwnerHandler) UpdateOwner(ctx *gin.Context) {
 		return
 	}
 
-	updatedOwner, err := h.updateOwnerUseCase.UpdateOwner(
+	updatedOwner, err := h.updateOwnerUseCase.Execute(
 		ctx,
 		newOwnerFromUpdateRequest(id, req),
 	)

@@ -24,7 +24,7 @@ func NewPropertyCatalogHandler(
 }
 
 func (h *PropertyCatalogHandler) ListPropertyTypes(ctx *gin.Context) {
-	propertyTypes, err := h.listPropertyTypesUseCase.ListPropertyTypes(ctx)
+	propertyTypes, err := h.listPropertyTypesUseCase.Execute(ctx)
 	if err != nil {
 		slog.Error("[ListPropertyTypes] failed to list property types", "err", err)
 		handleError(ctx, err)
@@ -35,7 +35,7 @@ func (h *PropertyCatalogHandler) ListPropertyTypes(ctx *gin.Context) {
 }
 
 func (h *PropertyCatalogHandler) ListPropertyStatuses(ctx *gin.Context) {
-	propertyStatuses, err := h.listPropertyStatusesUseCase.ListPropertyStatuses(ctx)
+	propertyStatuses, err := h.listPropertyStatusesUseCase.Execute(ctx)
 	if err != nil {
 		slog.Error("[ListPropertyStatuses] failed to list property statuses", "err", err)
 		handleError(ctx, err)

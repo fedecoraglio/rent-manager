@@ -20,7 +20,7 @@ func NewListInterestCalculationTypesUseCase(
 	}
 }
 
-func (uc *ListInterestCalculationTypesUseCase) ListInterestCalculationTypes(
+func (uc *ListInterestCalculationTypesUseCase) Execute(
 	ctx context.Context,
 ) ([]domain.InterestCalculationType, error) {
 	types, err := uc.contractCatalogRepository.ListInterestCalculationTypes(ctx)

@@ -24,7 +24,7 @@ func NewUpdateOwnerUseCase(
 	}
 }
 
-func (uc *UpdateOwnerUseCase) UpdateOwner(ctx context.Context, owner *domain.Owner) (*domain.Owner, error) {
+func (uc *UpdateOwnerUseCase) Execute(ctx context.Context, owner *domain.Owner) (*domain.Owner, error) {
 	if err := uc.ownerUpdatePolicy.Execute(ctx, owner); err != nil {
 		slog.Error("[UpdateOwnerUseCase] policy validation failed", "err", err)
 		return nil, err

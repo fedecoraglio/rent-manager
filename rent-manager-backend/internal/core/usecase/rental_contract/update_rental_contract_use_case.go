@@ -25,7 +25,7 @@ func NewUpdateRentalContractUseCase(
 	}
 }
 
-func (uc *UpdateRentalContractUseCase) UpdateRentalContract(
+func (uc *UpdateRentalContractUseCase) Execute(
 	ctx context.Context,
 	rentalContract *domain.RentalContract,
 ) (*domain.RentalContract, error) {

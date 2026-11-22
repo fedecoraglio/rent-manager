@@ -26,7 +26,7 @@ func NewGetRentalContractSummaryUseCase(
 	}
 }
 
-func (uc *GetRentalContractSummaryUseCase) GetRentalContractSummary(
+func (uc *GetRentalContractSummaryUseCase) Execute(
 	ctx context.Context,
 	rentalContractID int64,
 ) (*domain.RentalContractSummary, error) {

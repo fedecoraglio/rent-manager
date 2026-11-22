@@ -27,7 +27,7 @@ func NewContractCatalogHandler(
 }
 
 func (h *ContractCatalogHandler) ListContractStatuses(ctx *gin.Context) {
-	statuses, err := h.listContractStatusesUseCase.ListContractStatuses(ctx)
+	statuses, err := h.listContractStatusesUseCase.Execute(ctx)
 	if err != nil {
 		slog.Error("[ListContractStatuses] failed to list contract statuses", "err", err)
 		handleError(ctx, err)
@@ -38,7 +38,7 @@ func (h *ContractCatalogHandler) ListContractStatuses(ctx *gin.Context) {
 }
 
 func (h *ContractCatalogHandler) ListInterestCalculationTypes(ctx *gin.Context) {
-	interestTypes, err := h.listInterestCalculationTypesUseCase.ListInterestCalculationTypes(ctx)
+	interestTypes, err := h.listInterestCalculationTypesUseCase.Execute(ctx)
 	if err != nil {
 		slog.Error("[ListInterestCalculationTypes] failed to list interest calculation types", "err", err)
 		handleError(ctx, err)
@@ -49,7 +49,7 @@ func (h *ContractCatalogHandler) ListInterestCalculationTypes(ctx *gin.Context) 
 }
 
 func (h *ContractCatalogHandler) ListRentAdjustmentTypes(ctx *gin.Context) {
-	adjustmentTypes, err := h.listRentAdjustmentTypesUseCase.ListRentAdjustmentTypes(ctx)
+	adjustmentTypes, err := h.listRentAdjustmentTypesUseCase.Execute(ctx)
 	if err != nil {
 		slog.Error("[ListRentAdjustmentTypes] failed to list rent adjustment types", "err", err)
 		handleError(ctx, err)

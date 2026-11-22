@@ -34,7 +34,7 @@ func (h *AuthHandler) Login(ctx *gin.Context) {
 		return
 	}
 
-	token, err := h.loginUseCase.Login(ctx, &domain.Login{
+	token, err := h.loginUseCase.Execute(ctx, &domain.Login{
 		Email:    req.Email,
 		Password: req.Password,
 	})

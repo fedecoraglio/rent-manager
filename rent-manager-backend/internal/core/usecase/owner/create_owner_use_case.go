@@ -24,7 +24,7 @@ func NewCreateOwnerUseCase(
 	}
 }
 
-func (uc *CreateOwnerUseCase) CreateOwner(ctx context.Context, owner *domain.Owner) (*domain.Owner, error) {
+func (uc *CreateOwnerUseCase) Execute(ctx context.Context, owner *domain.Owner) (*domain.Owner, error) {
 	if err := uc.ownerCreatePolicy.Execute(ctx, owner); err != nil {
 		slog.Error("[CreateOwnerUseCase] policy validation failed", "err", err)
 		return nil, err

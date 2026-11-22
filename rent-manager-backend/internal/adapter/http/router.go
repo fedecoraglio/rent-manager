@@ -32,6 +32,7 @@ func NewRouter(
 	contractCatalogHandler *ContractCatalogHandler,
 	rentPaymentHandler *RentPaymentHandler,
 	inflationIndexHandler *InflationIndexHandler,
+	documentHandler *DocumentHandler,
 	tokenProvider port.TokenProvider,
 ) (*Router, error) {
 	if config.Env == "production" {
@@ -57,6 +58,7 @@ func NewRouter(
 		"Accept",
 		"Authorization",
 	}
+	ginConfig.ExposeHeaders = []string{"Location", "Content-Disposition"}
 	router := gin.New()
 	router.Use(
 		sloggin.New(slog.Default()),
@@ -130,6 +132,7 @@ func NewRouter(
 		}
 		rentalContracts := v1.Group("/rental-contracts")
 		rentalContracts.Use(authMiddleware)
+		documentHandler.Register(rentalContracts)
 		{
 			rentalContracts.POST("", rentalContractHandler.CreateRentalContract)
 			rentalContracts.GET("", rentalContractHandler.ListRentalContracts)

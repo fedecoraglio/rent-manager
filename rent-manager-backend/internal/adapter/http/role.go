@@ -21,7 +21,7 @@ func (rh *RoleHandler) ListRoles(ctx *gin.Context) {
 		return
 	}
 
-	roles, err := rh.listRolesUseCase.ListRoles(ctx, req.Page, req.Limit)
+	roles, err := rh.listRolesUseCase.Execute(ctx, req.Page, req.Limit)
 	if err != nil {
 		handleError(ctx, err)
 	}

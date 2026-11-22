@@ -20,7 +20,7 @@ func NewListCountriesUseCase(
 	}
 }
 
-func (uc *ListCountriesUseCase) ListCountries(
+func (uc *ListCountriesUseCase) Execute(
 	ctx context.Context,
 ) ([]domain.Country, error) {
 	countries, err := uc.locationRepository.ListCountries(ctx)

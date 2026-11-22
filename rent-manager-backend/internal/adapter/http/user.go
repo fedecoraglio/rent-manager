@@ -48,7 +48,7 @@ func (h *UserHandler) CreateUser(ctx *gin.Context) {
 
 	user := newUserFromCreateRequest(req)
 
-	createdUser, err := h.createUserUseCase.CreateUser(ctx, user)
+	createdUser, err := h.createUserUseCase.Execute(ctx, user)
 	if err != nil {
 		handleError(ctx, err)
 		return
@@ -64,7 +64,7 @@ func (h *UserHandler) GetUserByID(ctx *gin.Context) {
 		return
 	}
 
-	user, err := h.getUserByIDUseCase.GetUserByID(ctx, id)
+	user, err := h.getUserByIDUseCase.Execute(ctx, id)
 	if err != nil {
 		handleError(ctx, err)
 		return
@@ -81,7 +81,7 @@ func (h *UserHandler) ListUsers(ctx *gin.Context) {
 		return
 	}
 
-	users, err := h.listUsersUseCase.ListUsers(ctx, req.Page, req.Limit)
+	users, err := h.listUsersUseCase.Execute(ctx, req.Page, req.Limit)
 	if err != nil {
 		handleError(ctx, err)
 		return
@@ -98,7 +98,7 @@ func (h *UserHandler) SearchUsers(ctx *gin.Context) {
 		return
 	}
 
-	users, err := h.searchUsersUseCase.SearchUsersByNameOrEmail(ctx, req.Value, req.Page, req.Limit)
+	users, err := h.searchUsersUseCase.Execute(ctx, req.Value, req.Page, req.Limit)
 	if err != nil {
 		handleError(ctx, err)
 		return
@@ -123,7 +123,7 @@ func (h *UserHandler) UpdateUser(ctx *gin.Context) {
 
 	user := newUserFromUpdateRequest(id, req)
 
-	updatedUser, err := h.updateUserUseCase.UpdateUser(ctx, user)
+	updatedUser, err := h.updateUserUseCase.Execute(ctx, user)
 	if err != nil {
 		handleError(ctx, err)
 		return
@@ -139,7 +139,7 @@ func (h *UserHandler) DeleteUser(ctx *gin.Context) {
 		return
 	}
 
-	if err := h.deleteUserUseCase.DeleteUser(ctx, id); err != nil {
+	if err := h.deleteUserUseCase.Execute(ctx, id); err != nil {
 		handleError(ctx, err)
 		return
 	}

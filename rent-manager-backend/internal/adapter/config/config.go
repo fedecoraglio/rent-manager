@@ -1,8 +1,11 @@
 package config
 
 import (
+	"fmt"
 	"github.com/joho/godotenv"
 	"os"
+	"strconv"
+	"time"
 )
 
 // Container contains environment variables for the application, database, cache, token, and http server
@@ -12,6 +15,11 @@ type (
 		DB   *DB
 		HTTP *HTTP
 		Auth *Auth
+		AI   *AI
+	}
+	AI struct {
+		BaseURL string
+		Timeout time.Duration
 	}
 	// App contains all the environment variables for the application
 	App struct {
@@ -73,10 +81,23 @@ func New() (*Container, error) {
 		JWTSecret: os.Getenv("JWT_SECRET"),
 	}
 
+	baseURL := os.Getenv("AI_BASE_URL")
+	if baseURL == "" {
+		baseURL = "http://localhost:8081"
+	}
+	seconds := 450
+	if value := os.Getenv("AI_TIMEOUT_SECONDS"); value != "" {
+		parsed, err := strconv.Atoi(value)
+		if err != nil || parsed <= 0 || parsed > 3600 {
+			return nil, fmt.Errorf("AI_TIMEOUT_SECONDS must be between 1 and 3600")
+		}
+		seconds = parsed
+	}
 	return &Container{
 		app,
 		db,
 		http,
 		auth,
+		&AI{BaseURL: baseURL, Timeout: time.Duration(seconds) * time.Second},
 	}, nil
 }

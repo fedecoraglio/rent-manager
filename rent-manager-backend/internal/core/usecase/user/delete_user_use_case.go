@@ -15,6 +15,6 @@ func NewDeleteUserUseCase(userRepository port.UserRepository) *DeleteUserUseCase
 	}
 }
 
-func (uc *DeleteUserUseCase) DeleteUser(ctx context.Context, id int64) error {
+func (uc *DeleteUserUseCase) Execute(ctx context.Context, id int64) error {
 	return uc.userRepository.DeleteUser(ctx, id)
 }
