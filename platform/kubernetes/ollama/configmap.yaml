@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ollama-config
+  namespace: rent-manager
+data:
+  OLLAMA_HOST: "0.0.0.0:11434"
+  OLLAMA_MODELS: "/root/.ollama/models"
+  OLLAMA_MAX_LOADED_MODELS: "1"
+  OLLAMA_NUM_PARALLEL: "1"
+  # Match the effective models in rent-manager-ai/config/AiConfiguration.java.
+  EMBEDDING_MODEL: "nomic-embed-text"
+  CHAT_MODEL: "qwen2.5:3b-instruct"

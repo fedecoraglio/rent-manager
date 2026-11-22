@@ -1,0 +1,39 @@
+name: Build AI Image
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "rent-manager-ai/**"
+      - ".github/workflows/ai-image.yml"
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: fedecoraglio/rent-manager-ai
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push AI
+        uses: docker/build-push-action@v6
+        with:
+          context: ./rent-manager-ai
+          file: ./rent-manager-ai/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/fedecoraglio/rent-manager-ai:master
+            ghcr.io/fedecoraglio/rent-manager-ai:${{ github.sha }}
