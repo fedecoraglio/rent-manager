@@ -19,7 +19,7 @@ function Assert-Status($Response, [int]$Expected) {
     }
 }
 
-function Send-Pdf([string]$Url, [byte[]]$Bytes, [string]$Type = 'RENT_CONTRACT', [string]$Mime = 'application/pdf') {
+function Send-Pdf([string]$Url, [byte[]]$Bytes, [string]$Type = 'ANNEX', [string]$Mime = 'application/pdf') {
     $form = [System.Net.Http.MultipartFormDataContent]::new()
     try {
         $part = [System.Net.Http.ByteArrayContent]::new($Bytes)
@@ -38,7 +38,7 @@ function Upload-Document([string]$Url, [byte[]]$Bytes) {
         Assert-Status $response 201
         $document = $response.Content.ReadAsStringAsync().GetAwaiter().GetResult() | ConvertFrom-Json
         $created.Add("$Url/$($document.id)")
-        if ($document.filename -ne 'contract.pdf' -or $document.size -ne $Bytes.Length -or $document.type -ne 'RENT_CONTRACT') {
+        if ($document.filename -ne 'contract.pdf' -or $document.size -ne $Bytes.Length -or $document.type -ne 'ANNEX') {
             throw 'Upload metadata does not match the PDF'
         }
         if ($document.PSObject.Properties.Name -contains 'storagePath') { throw 'Response exposes internal storage path' }
@@ -63,8 +63,8 @@ function Invoke-Sql([string]$Sql) {
 }
 
 function Assert-Chunks($Document, [string]$Contract, [int]$Expected) {
-    $id = [Guid]::Parse($Document.id).ToString()
-    $count = Invoke-Sql "SELECT count(*) FROM vector_store WHERE document_id = '$id'::uuid AND metadata->>'propertyId' = '$scope' AND metadata->>'contractId' = '$Contract' AND metadata->>'documentType' = 'RENT_CONTRACT' AND metadata->>'filename' = 'contract.pdf' AND metadata->>'page' IN ('1', '2') AND length(content) > 0 AND vector_dims(embedding) = 768;"
+    $id = $Document.id
+    $count = Invoke-Sql "SELECT count(*) FROM vector_store WHERE document_id = '$id' AND metadata->>'propertyId' = '$scope' AND metadata->>'contractId' = '$Contract' AND metadata->>'documentType' = 'ANNEX' AND metadata->>'filename' = 'contract.pdf' AND metadata->>'page' IN ('1', '2') AND length(content) > 0 AND vector_dims(embedding) = 768;"
     if ([int]$count -ne $Expected) { throw "Expected $Expected scoped 768-dimensional chunks, received $count" }
 }
 
@@ -97,6 +97,41 @@ $pdfBytes = New-TestPdf
 
 try {
     Assert-List $basePath 0
+    # RENT_CONTRACT replaces in place; ANNEX uploads below retain multiplicity checks.
+    $contractId = $null
+    $replacementPdf = [System.Text.Encoding]::ASCII.GetBytes(
+        [System.Text.Encoding]::ASCII.GetString($pdfBytes).Replace('2027', '2028'))
+    try {
+        foreach ($attempt in 1..2) {
+            $contractBytes = if ($attempt -eq 1) { $pdfBytes } else { $replacementPdf }
+            $response = Send-Pdf $basePath $contractBytes 'RENT_CONTRACT'
+            try {
+                Assert-Status $response 201
+                $contract = $response.Content.ReadAsStringAsync().GetAwaiter().GetResult() | ConvertFrom-Json
+                if ($contractId -and $contractId -ne $contract.id) { throw 'Replacement changed the contract ID' }
+                $contractId = $contract.id
+                if ($contractId -ne "${scope}_A_RENT_CONTRACT") { throw 'Unexpected business document ID' }
+            } finally { $response.Dispose() }
+            Assert-List $basePath 1
+        }
+        $response = $client.GetAsync("$basePath/$contractId").GetAwaiter().GetResult()
+        try {
+            Assert-Status $response 200
+            $download = $response.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult()
+            if ([Convert]::ToBase64String($download) -ne [Convert]::ToBase64String($replacementPdf)) {
+                throw 'Contract replacement did not return the new PDF bytes'
+            }
+        } finally { $response.Dispose() }
+        if ($CheckIndexing) {
+            $count = Invoke-Sql "SELECT count(*) FROM vector_store WHERE document_id = '$contractId';"
+            if ([int]$count -ne 2) { throw 'Replacement retained old chunks or lost new chunks' }
+        }
+    } finally {
+        if ($contractId) {
+            $response = $client.DeleteAsync("$basePath/$contractId").GetAwaiter().GetResult()
+            try { Assert-Status $response 204 } finally { $response.Dispose() }
+        }
+    }
     $first = Upload-Document $basePath $pdfBytes
     $second = Upload-Document $basePath $pdfBytes
     $third = Upload-Document $otherContract $pdfBytes

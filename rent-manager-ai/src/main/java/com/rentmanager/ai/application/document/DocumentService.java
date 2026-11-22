@@ -3,6 +3,7 @@ package com.rentmanager.ai.application.document;
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 import com.rentmanager.ai.port.out.DocumentIndexer;
@@ -12,6 +13,7 @@ import com.rentmanager.ai.domain.document.DocumentException;
 import com.rentmanager.ai.domain.document.DocumentMetadata;
 import com.rentmanager.ai.domain.document.DocumentScope;
 import com.rentmanager.ai.domain.document.DocumentType;
+import com.rentmanager.ai.domain.document.DocumentId;
 import com.rentmanager.ai.adapter.out.ai.PdfUploadValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,10 +50,15 @@ public final class DocumentService {
     public DocumentMetadata upload(final DocumentScope scope, final DocumentType type, final MultipartFile file) {
         Objects.requireNonNull(type, "Document type is required");
         final var pdf = validator.validate(file);
-        final UUID id = UUID.randomUUID();
+        final String id = DocumentId.create(scope, type);
+        final UUID fileId = UUID.randomUUID();
         final Instant now = Instant.now();
         return Objects.requireNonNull(transactions.execute(status -> {
-            final String path = storage.save(scope, id, pdf.content());
+            repository.lockScope(scope);
+            final var previous = type == DocumentType.RENT_CONTRACT
+                    ? repository.find(scope, id, true) : Optional.<DocumentMetadata>empty();
+            // Each upload writes a new physical version; the old file survives until commit.
+            final String path = storage.save(scope, fileId, pdf.content());
             TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
                 @Override
                 public void afterCompletion(final int completion) {
@@ -63,8 +70,19 @@ public final class DocumentService {
                     }
                 }
             });
+            previous.ifPresent(old -> {
+                indexer.delete(old);
+                repository.delete(scope, id);
+                TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                    @Override
+                    public void afterCommit() {
+                        cleanup(id, () -> storage.remove(old.storagePath()));
+                    }
+                });
+            });
             final var document = new DocumentMetadata(id, scope.propertyId(), scope.contractId(), type,
-                    pdf.filename(), id + ".pdf", path, "application/pdf", pdf.content().length, now, now);
+                    pdf.filename(), fileId + ".pdf", path, "application/pdf", pdf.content().length,
+                    previous.map(DocumentMetadata::createdAt).orElse(now), now);
             repository.insert(document);
             indexer.index(document, storage.read(path));
             return document;
@@ -75,13 +93,17 @@ public final class DocumentService {
         return repository.list(scope);
     }
 
-    public Download download(final DocumentScope scope, final UUID id) {
-        final var document = repository.find(scope, id, false).orElseThrow(DocumentException::notFound);
-        return new Download(document, storage.read(document.storagePath()));
+    public Download download(final DocumentScope scope, final String id) {
+        return Objects.requireNonNull(transactions.execute(status -> {
+            repository.lockScope(scope);
+            final var document = repository.find(scope, id, false).orElseThrow(DocumentException::notFound);
+            return new Download(document, storage.read(document.storagePath()));
+        }));
     }
 
-    public void delete(final DocumentScope scope, final UUID id) {
+    public void delete(final DocumentScope scope, final String id) {
         transactions.executeWithoutResult(status -> {
+            repository.lockScope(scope);
             // Serializes competing deletes of the same document before touching its file.
             final var document = repository.find(scope, id, true).orElseThrow(DocumentException::notFound);
             indexer.delete(document);
@@ -114,7 +136,7 @@ public final class DocumentService {
         });
     }
 
-    private static void cleanup(final UUID id, final Runnable action) {
+    private static void cleanup(final String id, final Runnable action) {
         try {
             action.run();
         } catch (final RuntimeException exception) {

@@ -159,16 +159,16 @@ with control characters or more than 255 characters are rejected.
 ```sh
 curl -F "file=@contract.pdf;type=application/pdf" -F "type=RENT_CONTRACT" http://localhost:8081/properties/123/contracts/456/documents
 curl http://localhost:8081/properties/123/contracts/456/documents
-curl -o downloaded.pdf http://localhost:8081/properties/123/contracts/456/documents/DOCUMENT_UUID
-curl -X DELETE http://localhost:8081/properties/123/contracts/456/documents/DOCUMENT_UUID
+curl -o downloaded.pdf http://localhost:8081/properties/123/contracts/456/documents/DOCUMENT_ID
+curl -X DELETE http://localhost:8081/properties/123/contracts/456/documents/DOCUMENT_ID
 ```
 
-Use `curl.exe` in Windows PowerShell if `curl` is aliased. Replace `DOCUMENT_UUID` with the upload response ID.
+Use `curl.exe` in Windows PowerShell if `curl` is aliased. Replace `DOCUMENT_ID` with the upload response ID.
 Upload and list metadata use this shape:
 
 ```json
 {
-  "id": "ee0807ab-4571-4a19-b89f-3258c6d885c2",
+  "id": "123_456_RENT_CONTRACT",
   "type": "RENT_CONTRACT",
   "filename": "contract.pdf",
   "contentType": "application/pdf",
@@ -179,14 +179,14 @@ Upload and list metadata use this shape:
 
 List responses wrap these records in an array. Internal paths and stored filenames are not
 returned. Downloads preserve the original filename and use `no-store` and `nosniff` headers.
-Invalid PDFs, invalid IDs or unknown types return 400; unsupported file types return 415;
+Invalid PDFs, invalid scope references or unknown types return 400; unsupported file types return 415;
 oversized uploads return 413; missing or out-of-scope documents return 404. Registry/storage
 outages return 503. Errors use Spring's `application/problem+json` format without SQL or
 physical paths in the response.
 
-PDFs live at `properties/{propertyId}/contracts/{contractId}/{documentId}.pdf` beneath the
+PDFs live at `properties/{propertyId}/contracts/{contractId}/{fileVersionUuid}.pdf` beneath the
 storage root. Duplicate original filenames never overwrite one another. PostgreSQL's
-`documents` table records UUID, references, type, original/stored filenames, relative path,
+`documents` table records the business document ID, references, type, original/stored filenames, relative path,
 MIME type, byte size and UTC creation/update timestamps; it never stores PDF bytes. Relative
 paths allow moving the storage volume without rewriting registry paths.
 
@@ -201,15 +201,15 @@ and service classes can be `final` without transaction proxies.
 - Delete locks the scoped registry row, renames the PDF to `<uuid>.pdf.deleting`, deletes the
   row and commits. After commit it unlinks the staged file; rollback restores the original.
   A missing physical file does not prevent deleting a stale registry row.
-- If the commit outcome is unknown, retain the physical file and log the document UUID.
+- If the commit outcome is unknown, retain the physical file and log the document ID.
   Removing it could destroy a PDF whose registry insert actually committed. A post-commit
-  unlink failure returns 503 and logs the UUID; the registry row is already deleted.
+  unlink failure returns 503 and logs the document ID; the registry row is already deleted.
 - A process crash or a second filesystem failure during compensation can require manual
   reconciliation. There is no distributed transaction, background cleanup job or automatic
-  crash recovery in Phase 2. No vector rows exist yet; vector cleanup starts with Phase 3.
+  crash recovery in Phase 2. Registry rows and vectors share the same transaction.
 
 For reconciliation, stop the AI application while leaving PostgreSQL available. Use the
-logged UUID and registry `storage_path` to inspect the exact file. A `.deleting` file with a
+logged document ID and registry `storage_path` to inspect the exact file. A `.deleting` file with a
 remaining registry row should be restored to its original name (provided no original exists);
 one without a row can be removed. An upload PDF without a registry row can be removed after
 confirming no upload is active. Remove stale `.upload-*.tmp` files only while the service is
@@ -273,3 +273,33 @@ docker compose exec ollama ollama list
 docker compose exec ollama ollama pull nomic-embed-text
 docker compose exec ollama ollama pull qwen2.5:3b-instruct
 ```
+
+### Business IDs and contract replacement
+
+Document IDs are strings: `{propertyId}_{contractId}_RENT_CONTRACT` for the
+single rental contract, and `{propertyId}_{contractId}_{type}_{uuid}` for other
+types. Underscores inside references are escaped as `~` to prevent collisions
+between different property/contract pairs. Use the returned ID in API URLs.
+Chunk IDs remain UUIDs. Physical PDFs keep independent UUID filenames so a
+replacement never overwrites the previous file before its database commit.
+
+Uploading RENT_CONTRACT again replaces its registry row and all vector chunks
+in one transaction, preserves its logical ID and createdAt, and updates updatedAt.
+The old PDF is removed only after commit. On rollback the new PDF is removed
+and the old registry/vectors/file remain available. Post-commit cleanup failures
+are logged for reconciliation; they do not undo a successful replacement.
+POST still returns 201 and Location for both creation and replacement.
+Other document types remain independently uploadable, including duplicate filenames.
+
+PostgreSQL transaction advisory locks serialize uploads, downloads and deletions
+within each scope, including concurrent first uploads. A partial unique index
+also enforces one RENT_CONTRACT per scope. Long indexing requests can delay other
+operations in that scope; transaction timeout still applies.
+
+Migration V3 converts existing registry IDs and vector metadata/FKs without
+renaming PDFs or recalculating embeddings. Existing API document URLs change;
+clients must refresh document lists. If duplicate RENT_CONTRACT rows exist, V3
+fails explicitly without deleting them: back up PostgreSQL and PDFs and resolve
+those duplicates before retrying. Stop old API instances before the migration;
+they expect UUID document IDs. Rolling back the image alone is not supported
+after V3; restore a consistent pre-migration database/files backup if needed.

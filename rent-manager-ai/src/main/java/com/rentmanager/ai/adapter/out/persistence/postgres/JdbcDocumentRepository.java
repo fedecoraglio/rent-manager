@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -22,6 +22,13 @@ public final class JdbcDocumentRepository implements DocumentRepository {
 
     public JdbcDocumentRepository(final JdbcTemplate jdbc) {
         this.jdbc = jdbc;
+    }
+
+    @Override
+    public void lockScope(final DocumentScope scope) {
+        // Transaction-scoped lock also serializes first uploads when no row exists yet.
+        jdbc.query("SELECT pg_advisory_xact_lock(hashtextextended(?, 0))",
+                row -> { }, scope.propertyId() + ":" + scope.contractId());
     }
 
     public void insert(final DocumentMetadata document) {
@@ -41,13 +48,13 @@ public final class JdbcDocumentRepository implements DocumentRepository {
                 """, JdbcDocumentRepository::map, scope.propertyId(), scope.contractId());
     }
 
-    public Optional<DocumentMetadata> find(final DocumentScope scope, final UUID id, final boolean lock) {
+    public Optional<DocumentMetadata> find(final DocumentScope scope, final String id, final boolean lock) {
         final String sql = "SELECT * FROM documents WHERE property_id = ? AND contract_id = ? AND document_id = ?"
                 + (lock ? " FOR UPDATE" : "");
         return jdbc.query(sql, JdbcDocumentRepository::map, scope.propertyId(), scope.contractId(), id).stream().findFirst();
     }
 
-    public void delete(final DocumentScope scope, final UUID id) {
+    public void delete(final DocumentScope scope, final String id) {
         final int deleted = jdbc.update("DELETE FROM documents WHERE property_id = ? AND contract_id = ? AND document_id = ?",
                 scope.propertyId(), scope.contractId(), id);
         if (deleted != 1) {
@@ -56,7 +63,7 @@ public final class JdbcDocumentRepository implements DocumentRepository {
     }
 
     private static DocumentMetadata map(final ResultSet row, final int index) throws SQLException {
-        return new DocumentMetadata(row.getObject("document_id", UUID.class), row.getString("property_id"),
+        return new DocumentMetadata(row.getString("document_id"), row.getString("property_id"),
                 row.getString("contract_id"), DocumentType.valueOf(row.getString("document_type")),
                 row.getString("original_filename"), row.getString("stored_filename"), row.getString("storage_path"),
                 row.getString("content_type"), row.getLong("file_size"), row.getTimestamp("created_at").toInstant(),

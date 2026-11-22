@@ -3,7 +3,6 @@ package com.rentmanager.ai.adapter.in.web.controller;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.UUID;
 
 import com.rentmanager.ai.adapter.in.web.response.DocumentResponse;
 import org.springframework.http.ContentDisposition;
@@ -47,7 +46,8 @@ public final class DocumentController {
 
     @GetMapping("/{documentId}")
     public ResponseEntity<byte[]> download(@PathVariable final String propertyId, @PathVariable final String contractId,
-                                           @PathVariable final UUID documentId, @RequestParam(defaultValue = "false") final boolean download) {
+                                           @PathVariable final String documentId,
+                                           @RequestParam(defaultValue = "false") final boolean download) {
         final var result = service.download(new DocumentScope(propertyId, contractId), documentId);
         final var disposition = (download ? ContentDisposition.attachment() : ContentDisposition.inline())
                 .filename(result.document().originalFilename(), StandardCharsets.UTF_8).build();
@@ -60,7 +60,7 @@ public final class DocumentController {
 
     @DeleteMapping("/{documentId}")
     public ResponseEntity<Void> delete(@PathVariable final String propertyId, @PathVariable final String contractId,
-                                       @PathVariable final UUID documentId) {
+                                       @PathVariable final String documentId) {
         service.delete(new DocumentScope(propertyId, contractId), documentId);
         return ResponseEntity.noContent().build();
     }
