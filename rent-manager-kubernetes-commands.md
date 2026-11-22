@@ -1,5 +1,21 @@
 # Rent Manager — Kubernetes Command Reference
 
+## AI stack (PostgreSQL/pgvector and Ollama)
+
+See [AI Kubernetes deployment](platform/kubernetes/ai/README.md) for first-time
+Secret setup, image publication, persistent storage, model initialization,
+rollout, smoke tests, and data migration.
+
+```powershell
+kubectl -n rent-manager get pods,pvc
+kubectl -n rent-manager logs ollama-0 -c pull-models -f
+kubectl -n rent-manager rollout status deployment/ai --timeout=1800s
+kubectl -n rent-manager port-forward service/ai 8081:8081
+```
+
+Through the existing Ingress forward on 8085, the API base is
+`http://localhost:8085/ai`; through service/ai on 8081, omit the `/ai` prefix.
+
 ## Tool versions
 ```powershell
 docker --version

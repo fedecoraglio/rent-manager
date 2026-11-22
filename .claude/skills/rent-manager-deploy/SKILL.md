@@ -9,14 +9,14 @@ Read [infrastructure coverage](references/coverage.md), `../rent-manager-platfor
 
 ## Components and order
 
-Kubernetes manages MySQL → Go backend and Angular frontend → Ingress. Argo CD manages repository manifests. AI runs separately through Compose and does not participate in current image workflows. Verify context/namespace before mutations; do not recreate an existing cluster as the first troubleshooting step.
+Kubernetes manages MySQL, the Go backend, Angular frontend, and the AI stack (PostgreSQL/pgvector, Ollama, and AI API). Argo CD manages repository manifests. AI can also run independently through Compose. Verify context/namespace before mutations; do not recreate an existing cluster as the first troubleshooting step.
 
 ## Current builds and CI
 
 - Backend Dockerfile: Go 1.25.4 Alpine, go mod download, go build cmd/api, binary in Alpine 3.22. Embedded migrations.
 - Frontend: Node 22 Alpine, npm install and npm run build; browser output to Nginx 1.27 with SPA fallback. Dockerfile does not use npm ci.
 - AI: Maven 3.9.11/Java 21 runs mvn verify; Java 21 runtime with app user and writable storage.
-- `.github/workflows/backend-image.yml` and frontend-image.yml run on pushes to master, filtering their respective directory and workflow. Log in to GHCR with GITHUB_TOKEN/packages:write; publish `ghcr.io/fedecoraglio/rent-manager-{backend|frontend}:master`. They do not update manifest tags or run kubectl. There is no AI workflow or explicit Go/UI test job.
+- `.github/workflows/backend-image.yml`, frontend-image.yml, and ai-image.yml run on matching pushes to master. They publish GHCR :master images with GITHUB_TOKEN/packages:write. AI also supports manual execution and publishes a commit SHA tag; its Docker build runs mvn verify. Workflows do not update manifests or run kubectl. There is no explicit Go/UI test job.
 
 Publishing a new image under the same tag does not change PodTemplate and does not trigger a Kubernetes rollout by itself. Always pulls when a pod is created, not in an existing pod. Wait for CI to finish before restarting the changed component. For reproducible rollback, prefer an immutable digest/tag and a GitOps change; master does not retain historical image identity in the manifest.
 
@@ -64,9 +64,19 @@ Restart frontend rather than backend when its image/config changes. config.json 
 kubectl -n ingress-nginx port-forward service/ingress-nginx-controller 8085:80
 ```
 
-Open `http://localhost:8085`: `/` serves the SPA, `/v1` reaches Go without rewriting. Test login and an authenticated query. A GET to backend `/` is not a valid health endpoint. Current manifests lack probes; successful rollout does not guarantee functional health.
+Open `http://localhost:8085`: `/` serves Angular, `/v1` reaches Go unchanged, and the separate AI Ingress strips `/ai` before forwarding to ai:8081. Test login and an authenticated Go query. Backend `/` is not a health endpoint. The AI stack has probes; existing frontend/backend/MySQL manifests still lack them. Rollout alone does not validate business functionality.
 
 Alternatives in separate terminals: frontend `kubectl -n rent-manager port-forward svc/frontend 4400:80`; backend `... svc/backend 8082:8080`; MySQL `... svc/mysql 3307:3306`; Argo `kubectl -n argocd port-forward svc/argocd-server 8080:443`. Direct frontend access requires a reachable API base/CORS; it does not provide a /v1 proxy.
+
+## AI with Kubernetes
+
+Read [AI Kubernetes runbook](../../../platform/kubernetes/ai/README.md). Publish the AI image and prepare ignored postgres/secret.yaml from its example before syncing. Kustomize includes the non-secret ai/postgres/ollama manifests; Argo CD already watches that path. PostgreSQL and AI share postgres-secret credentials. Separate PVCs persist database (5Gi), models (10Gi), and PDFs (5Gi); Compose data is not imported.
+
+Ollama's init container runs a temporary loopback server and pulls missing nomic-embed-text/qwen2.5:3b-instruct models into persistent storage. AI init containers wait for authenticated database access and both models; Flyway creates the vector extension and tables. AI uses Recreate and UID/GID/fsGroup 10001 for single-writer persistent storage. This CPU stack needs at least 8Gi Docker Desktop memory, preferably more alongside other workloads.
+
+Use `kubectl -n rent-manager logs ollama-0 -c pull-models -f`, `rollout status statefulset/postgres --timeout=300s`, `rollout status statefulset/ollama --timeout=1800s`, and `rollout status deployment/ai --timeout=1800s`. Direct access: `kubectl -n rent-manager port-forward service/ai 8081:8081`, without /ai. Through the existing ingress forward, use http://localhost:8085/ai/actuator/health/readiness and the document smoke script with `-BaseUrl http://localhost:8085/ai`, without Compose-only switches.
+
+The AI Ingress allows 21m bodies and 330-second read/send timeouts. AI has no authentication; keep this ingress local to development. Angular integration is separate. Wait for CI before restarting deployment/ai for a changed master image; prefer commit SHA tags for reproducible releases. Updating the Secret does not rotate initialized PostgreSQL passwords.
 
 ## AI with Compose
 

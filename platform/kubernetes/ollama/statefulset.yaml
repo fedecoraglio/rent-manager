@@ -1,0 +1,105 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ollama
+  namespace: rent-manager
+spec:
+  serviceName: ollama
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ollama
+  template:
+    metadata:
+      labels:
+        app: ollama
+    spec:
+      # Bootstrap on the same PVC before starting the serving container. No
+      # dependency on Service readiness or on a separate Job sharing an RWO PVC.
+      initContainers:
+        - name: pull-models
+          image: ollama/ollama:0.12.3
+          envFrom:
+            - configMapRef:
+                name: ollama-config
+          env:
+            - name: OLLAMA_HOST
+              value: "127.0.0.1:11434"
+          command: ["/bin/sh", "-ec"]
+          args:
+            - |
+              ollama serve &
+              server_pid=$!
+              trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+              attempts=0
+              until ollama list >/dev/null 2>&1; do
+                attempts=$((attempts + 1))
+                if [ "$attempts" -ge 60 ]; then
+                  echo "Ollama bootstrap server did not start" >&2
+                  exit 1
+                fi
+                sleep 2
+              done
+              for model in "$EMBEDDING_MODEL" "$CHAT_MODEL"; do
+                if ! ollama show "$model" >/dev/null 2>&1; then
+                  ollama pull "$model"
+                fi
+              done
+              kill "$server_pid"
+              wait "$server_pid" || true
+              trap - EXIT
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "2"
+              memory: 2Gi
+          volumeMounts:
+            - name: ollama-storage
+              mountPath: /root/.ollama
+      containers:
+        - name: ollama
+          image: ollama/ollama:0.12.3
+          envFrom:
+            - configMapRef:
+                name: ollama-config
+          ports:
+            - name: http
+              containerPort: 11434
+          startupProbe:
+            httpGet:
+              path: /api/tags
+              port: http
+            periodSeconds: 5
+            timeoutSeconds: 5
+            failureThreshold: 60
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -ec
+                - export OLLAMA_HOST=http://127.0.0.1:11434; ollama show "$EMBEDDING_MODEL" >/dev/null && ollama show "$CHAT_MODEL" >/dev/null
+            periodSeconds: 15
+            timeoutSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/tags
+              port: http
+            periodSeconds: 20
+            timeoutSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests:
+              cpu: 500m
+              memory: 2Gi
+            limits:
+              cpu: "4"
+              memory: 6Gi
+          volumeMounts:
+            - name: ollama-storage
+              mountPath: /root/.ollama
+      volumes:
+        - name: ollama-storage
+          persistentVolumeClaim:
+            claimName: ollama-data

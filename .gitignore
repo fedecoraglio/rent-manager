@@ -25,7 +25,6 @@ rent-manager-ai/storage/
 rent-manager-ai/.idea/
 rent-manager-ai/*.iml
 
-
 # Kubernetes local secrets
 platform/kubernetes/**/secret.yaml
 

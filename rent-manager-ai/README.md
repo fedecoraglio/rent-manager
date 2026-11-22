@@ -1,15 +1,23 @@
 # Rent Manager AI
 
-Phases 1–2: an independent Java 21 service with PostgreSQL/pgvector and Ollama connectivity,
-plus a PDF document registry and filesystem storage. No indexing or chat exists yet.
-The Go backend, MySQL, Angular and platform are unchanged.
+A Java 21 service with PostgreSQL/pgvector, Ollama, a PDF document registry,
+filesystem storage, transactional indexing, and scoped RAG chat. It can run with
+Compose or as part of the platform Kubernetes application. The Go backend,
+MySQL, and Angular remain separate services.
+
+## Kubernetes deployment
+
+See [AI Kubernetes deployment](../platform/kubernetes/ai/README.md) for the
+PostgreSQL/pgvector and Ollama StatefulSets, persistent documents/models/data,
+Secret preparation, GHCR image workflow, probes, and smoke checks. The API is
+available under `/ai` through Ingress, or directly through service/ai port 8081.
 
 ## Versions and scope
 
 - Java 21; Spring Boot 4.0.8; Maven 3.9.11 in the Docker build.
 - Spring AI BOM 2.0.1 pins future AI modules. A BOM manages dependency versions; it does not
   enable models, download models, create vectors or execute RAG.
-- PostgreSQL 17 with pgvector 0.8.2; Ollama 0.11.11, running on CPU by default.
+- PostgreSQL 17 with pgvector 0.8.2; Ollama 0.12.3, running on CPU by default.
 - Flyway manages the document schema; Apache PDFBox 3.0.8 validates PDF structure without
   extracting text or generating embeddings. Plain JDBC handles registry queries.
 - Model configuration reserves `qwen3:4b` for generation and `nomic-embed-text` for embeddings.
@@ -66,7 +74,7 @@ This is a local learning environment; authentication and authorization are not i
 ## Download the models
 
 ```sh
-docker compose exec ollama ollama pull qwen3:4b
+docker compose exec ollama ollama pull qwen2.5:3b-instruct
 docker compose exec ollama ollama pull nomic-embed-text
 docker compose exec ollama ollama list
 ```
@@ -248,7 +256,8 @@ Ollama restored readiness. Model downloads and inference are not part of this bo
 4. **Phase 5:** retrieve context and ask Qwen to answer only from that context, including an
    explicit not-found response. This is the generation step of RAG.
 5. **Phases 6–9:** Angular documents, stateless assistant, error cleanup and source citations.
-6. **Phase 10:** evaluate Kubernetes separately after local acceptance.
+6. **Kubernetes manifests available:** see the deployment guide above; validate
+   the live rollout and smoke checks in the target cluster.
 
 Frontend inspection on `master` found standalone Angular 21 Material components, signals,
 Tailwind styling, translations, `core` API/read services and feature write services. Future UI

@@ -16,3 +16,19 @@ resources:
   - frontend/configmap.yaml
   - frontend/deployment.yaml
   - frontend/service.yaml
+
+  - postgres/configmap.yaml
+  - postgres/pvc.yaml
+  - postgres/service.yaml
+  - postgres/statefulset.yaml
+
+  - ollama/configmap.yaml
+  - ollama/pvc.yaml
+  - ollama/service.yaml
+  - ollama/statefulset.yaml
+
+  - ai/configmap.yaml
+  - ai/pvc.yaml
+  - ai/deployment.yaml
+  - ai/service.yaml
+  - ai/ingress.yaml

@@ -23,4 +23,6 @@ Configure `POSTGRES_HOST/PORT/DB/USER/PASSWORD`, `OLLAMA_BASE_URL`, `DOCUMENT_ST
 
 ## Run and verify
 
-Read `../rent-manager-deploy/SKILL.md` for Compose and models. From `rent-manager-ai`: `mvn verify` or `mvn spring-boot:run` with the environment prepared. `scripts/smoke-documents.ps1` is the document smoke test; read parameters and effects before running it. Health/readiness/liveness are exposed through Actuator; readiness includes DB, pgvector, and Ollama, while liveness only includes process state. Do not treat readiness as validation of every chat response.
+Read `../rent-manager-deploy/SKILL.md` for Compose and Kubernetes. Root Kustomize deploys AI, PostgreSQL/pgvector, and Ollama. Read [AI Kubernetes runbook](../../../platform/kubernetes/ai/README.md) and the ai/postgres/ollama manifests for Secret setup, model bootstrap, PVCs, probes, resource sizing, and /ai Ingress routing. Docker UID/GID 10001 matches fsGroup for persistent document writes. The ai-image workflow publishes master and commit SHA tags to GHCR.
+
+From `rent-manager-ai`: `mvn verify` or `mvn spring-boot:run` with the environment prepared. `scripts/smoke-documents.ps1` is the document smoke test; read parameters/effects first. For Kubernetes use `-BaseUrl http://localhost:8085/ai` without Compose-only switches. Actuator readiness includes DB, pgvector, and Ollama; liveness only includes process state. Readiness does not validate every chat response.
